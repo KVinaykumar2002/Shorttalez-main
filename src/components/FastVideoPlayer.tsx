@@ -200,7 +200,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
               enableAudioForVideo(videoRef.current);
             }
           }}
-          preload="metadata"
+          preload={isIOS ? "auto" : "metadata"}
           playsInline
           webkit-playsinline="true"
           controls={true}

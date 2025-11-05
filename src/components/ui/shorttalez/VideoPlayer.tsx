@@ -89,6 +89,9 @@ export default function VideoPlayer({
       isIOS
     });
     
+    // Force eager buffering for reels-like experience
+    try { v.preload = 'auto'; v.load(); } catch {}
+
     v.play().catch((err) => {
       console.log('[iOS Audio] Autoplay prevented:', err);
       // On iOS, don't force mute - wait for user interaction
@@ -240,7 +243,7 @@ export default function VideoPlayer({
         poster={video.poster}
         playsInline
         webkit-playsinline="true"
-        preload="metadata"
+        preload={isIOS ? "auto" : "metadata"}
         controls={true}
         disablePictureInPicture
         crossOrigin="anonymous"

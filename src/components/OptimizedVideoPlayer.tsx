@@ -665,7 +665,8 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     const renderDirect = () => {
       // Use instant load source if available, otherwise fallback to original URL
       const videoSrc = (isDirectVideo && instantLoad.videoSrc) ? instantLoad.videoSrc : getEmbedUrl();
-      const showSkeleton = isDirectVideo && instantLoad.isLoading && !canPlay;
+      // Disable skeleton on iOS to avoid visual delays
+      const showSkeleton = !isIOS && isDirectVideo && instantLoad.isLoading && !canPlay;
 
       return (
         <>
@@ -690,7 +691,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
             poster={thumbnailUrl}
             muted={muted}
             autoPlay={autoPlay}
-            preload="metadata"
+            preload={isIOS ? "auto" : "metadata"}
             playsInline
             webkit-playsinline="true"
             x5-playsinline="true"
@@ -724,7 +725,8 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
             onTimeUpdate={onDirectTimeUpdate}
             onWaiting={() => {
               console.log('[iOS Video] onWaiting');
-              setBuffering(true);
+              // Reduce perceived loading on iOS
+              if (!isIOS) setBuffering(true);
             }}
             onCanPlay={() => {
               console.log('[iOS Video] onCanPlay');
@@ -796,7 +798,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     );
 
     const renderBuffering = () =>
-      playing && buffering ? (
+      playing && buffering && !isIOS ? (
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-40">
           <div className="bg-black/60 rounded-full p-4 backdrop-blur-sm">
             <Loader2 className="w-8 h-8 text-white animate-spin" />

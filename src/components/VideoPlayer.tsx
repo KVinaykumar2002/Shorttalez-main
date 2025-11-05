@@ -841,7 +841,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               enableAudioForVideo(videoRef.current);
             }
           }}
-          preload={preload}
+          preload={isIOS ? 'auto' : preload}
           playsInline
           webkit-playsinline="true"
           disablePictureInPicture
@@ -952,7 +952,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               enableAudioForVideo(videoRef.current);
             }
           }}
-          preload={preload}
+          preload={isIOS ? 'auto' : preload}
           playsInline
           webkit-playsinline="true"
           disablePictureInPicture
