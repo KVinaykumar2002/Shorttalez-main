@@ -1,0 +1,44 @@
+{
+  "brand": {
+    "name": "షార్ట్ టేల్జ్",
+    "tagline": "చిన్న కథలు"
+  },
+  "episode": "ఎపిసోడ్",
+  "episodes": "ఎపిసోడ్లు",
+  "series": "సిరీస్",
+  "views": "వ్యూస్",
+  "new": "కొత్త",
+  "hot": "హాట్",
+  "trending": "ట్రెండింగ్",
+  "watch_now": "ఇప్పుడు చూడండి",
+  "play": "ప్లే చేయండి",
+  "pause": "పాజ్ చేయండి",
+  "loading": "లోడ్ అవుతోంది...",
+  "load_more": "మరింత లోడ్ చేయండి",
+  "subscribe": "సబ్‌స్క్రైబ్ అవ్వండి",
+  "search": "వెతకండి",
+  "language": "భాష",
+  "romance": "రోమాన్స్",
+  "romance_section": "రోమాన్స్ కావాలా?",
+  "drama": "డ్రామా",
+  "comedy": "కామెడీ",
+  "action": "ఆక్షన్",
+  "thriller": "థ్రిల్లర్",
+  "hot": "హాట్",
+  "admin_dashboard": "అడ్మిన్ డ్యాష్‌బోర్డ్",
+  "admin_description": "సమగ్ర సిస్టమ్ నిర్వహణ మరియు పర్యవేక్షణ",
+  "administrator": "అడ్మినిస్ట్రేటర్",
+  "feed": {
+    "no_videos_yet": "ఇంకా వీడియోలు లేవు",
+    "be_first_to_share": "వీడియో షేర్ చేసే మొదటివారు అవ్వండి!",
+    "chill_and_cheel": "చిల్ అండ్ చీల్!"
+  },
+  "actions": {
+    "donate": "దానం చేయండి",
+    "thousand": "వేలు",
+    "million": "మిలియన్",
+    "bulk_upload": "బల్క్ అప్‌లోడ్",
+    "series_created": "సిరీస్ సృష్టించబడింది",
+    "upload_complete": "అప్‌లోడ్ పూర్తయింది"
+  }
+}

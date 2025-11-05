@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Your Feed — Short Talez | Personal Content Feed",
+    "description": "Mee personal feed chooskondi. Following creators, trending posts, personalized content — Short Talez lo mee kosam curated content."
+  },
+  "header": {
+    "conversation_lo_join_avvandi": "Conversation lo join avvandi!",
+    "meeku_nacchina_creators_ni_follow_cheyadaniki_login_avvandi": "Meeku nacchina creators ni follow cheyadaniki login avvandi, mee thoughts share cheskondi.",
+    "mee_social_feed": "Mee Social Feed",
+    "meeku_follow_ayyina_creators_nundi_amazing_content": "Meeku follow ayyina creators nundi amazing content and trending posts chudandi"
+  },
+  "actions": {
+    "login_avvandi": "Login avvandi",
+    "signup_cheskondi": "Signup cheskondi", 
+    "episodes_chudataniki_continue_avvandi": "Episodes chudataniki continue avvandi"
+  },
+  "tabs": {
+    "your_feed": "Mee Feed",
+    "following": "Following — Follow chesinavaallu",
+    "for_you": "For You — Meekosam", 
+    "trending": "Trending"
+  },
+  "posts": {
+    "whats_on_your_mind": "Mee mind lo enti?",
+    "share_your_thoughts": "Mee thoughts share cheyyandi...",
+    "post_cheyyandi": "Post cheyyandi",
+    "comment_cheyyandi": "Comment cheyyandi",
+    "mee_thoughts_experiences_leda_amazing_moments_share_cheskondi": "Mee thoughts, experiences, leda amazing moments share cheskondi...",
+    "share_cheskondi": "Share cheskondi",
+    "share_chesthunnam": "Share chesthunnam...",
+    "post_ayyindhi": "Post ayyindhi!",
+    "mee_post_successfully_share_ayyindhi": "Mee post successfully share ayyindhi.",
+    "authentication_kavali": "Authentication kavali",
+    "post_create_cheyadaniki_login_avvandi": "Post create cheyadaniki login avvandi.",
+    "security_error": "Security Error",
+    "authentication_validation_failed": "Authentication validation failed. Please sign in again.",
+    "rate_limit_exceeded": "Rate Limit Exceeded",
+    "please_wait_before_creating_another_post": "Please wait before creating another post.",
+    "content_kavali": "Content kavali",
+    "post_lo_koncham_content_leda_image_add_cheskondi": "Post lo koncham content leda image add cheskondi.",
+    "failed_to_create_post": "Failed to create post. Please try again."
+  },
+  "interactions": {
+    "liked_your_post": "mee post ni like chesaaru",
+    "commented_on_your_post": "mee post meeda comment chesaaru",
+    "started_following_you": "meeku follow ayyaaru",
+    "shared_your_video": "mee video share chesaaru"
+  },
+  "status": {
+    "live_feed": "Live Feed",
+    "following_and_suggestions": "Following & Suggestions",
+    "loading_feed": "Feed load chesthunnam...",
+    "no_posts_yet": "Posts levu inka",
+    "follow_creators": "Creators ni follow cheyyandi content kosam"
+  }
+}

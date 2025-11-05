@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "title": "Profile — Short Talez | Mee Profile Page", 
+    "description": "Mee profile, posts, creator content, likes manage cheyyandi Short Talez lo. Content create cheyyandi, creators ni follow avandi."
+  },
+  "header": {
+    "your_profile": "Mee Profile",
+    "sign_in_to_access": "Sign in to access your profile, manage your content, and connect with creators",
+    "sign_in": "Sign In",
+    "create_new_account": "Kotha Account Create Cheyyandi",
+    "continue_browsing_as_guest": "Guest ga continue avvandi",
+    "join_thousands": "Thousands mandi creators & viewers tho join avvandi Short Talez lo"
+  },
+  "stats": {
+    "series": "Creator",
+    "followers": "Followers",
+    "following": "Following",
+    "likes": "Likes"
+  },
+  "tabs": {
+    "posts": "Posts",
+    "series": "Creator",
+    "likes": "Likes", 
+    "following": "Following",
+    "settings": "Settings"
+  },
+  "creator": {
+    "creator_dashboard": "Creator Dashboard",
+    "upload_content": "Content Upload cheyyandi",
+    "analytics": "Analytics",
+    "your_series": "Mee Creator Content",
+    "become_a_creator": "Creator avvandi",
+    "start_creating_and_sharing": "Mee content create chesi share cheyyandi community tho.",
+    "get_started": "Start cheyyandi"
+  },
+  "likes": {
+    "your_liked_episodes": "Meeku nacchina Episodes",
+    "no_liked_episodes": "Meeku nacchina episodes levu inka",
+    "start_exploring": "Episodes explore chesi like cheyyandi"
+  },
+  "following": {
+    "you_are_following": "Meeruu follow chesthunnaru",
+    "following_creators": "Following — Creators",
+    "no_following": "Evarini follow chesthunna ledu",
+    "discover_creators": "Amazing creators ni discover cheyyandi",
+    "explore_series": "Creator Content Explore cheyyandi"
+  },
+  "settings": {
+    "profile_settings": "Profile Settings",
+    "theme": "Theme", 
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "telugu": "Telugu",
+    "english": "English", 
+    "notifications": "Notifications",
+    "sign_out": "Sign Out"
+  },
+  "messages": {
+    "loading_your_profile": "Mee profile load chesthunnam...",
+    "no_thumbnail": "Thumbnail ledu",
+    "published": "Published",
+    "draft": "Draft",
+    "views": "views"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "title": "All Videos — Short Talez | Telugu Short Films & Series",
+    "description": "Watch all videos here. Latest uploads, trending content, most liked videos — Short Talez Telugu short films & series."
+  },
+  "content": {
+    "all_videos": "All Videos",
+    "trending_videos": "Trending Videos",
+    "latest_uploads": "Latest Uploads",
+    "most_liked": "Most Liked",
+    "watch_later": "Watch Later",
+    "your_favorites": "Your Favorites"
+  },
+  "actions": {
+    "play": "Play",
+    "like": "Like", 
+    "share": "Share",
+    "comment": "Comment",
+    "follow": "Follow",
+    "load_more": "Load More"
+  },
+  "filters": {
+    "filter_by_genre": "Filter by Genre",
+    "sort_by": "Sort By",
+    "duration": "Duration",
+    "upload_date": "Upload Date", 
+    "view_count": "View Count"
+  },
+  "messages": {
+    "login_required": "Login Required",
+    "please_log_in_to_like_episodes": "Please log in to like episodes",
+    "loading_amazing_videos": "Loading amazing videos...",
+    "error_loading_videos": "Error loading videos",
+    "please_try_refreshing_the_page": "Please try refreshing the page",
+    "ee_series_lo_inka_episodes": "More episodes in this series",
+    "episode": "Episode",
+    "inka_load_cheskondi": "Load More"
+  },
+  "stats": {
+    "views": "views",
+    "likes": "likes", 
+    "comments": "comments",
+    "episodes": "episodes"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "Short Talez — Short Series & Stories | Telugu Short Films",
+    "description": "Watch short films & series on Short Talez. Create, watch, share — MiniOTT for everyone. Telugu short stories, web series available here."
+  },
+  "header": {
+    "brand_tagline": "Short Stories",
+    "search_placeholder": "Search for series, creators...",
+    "search_button": "Search",
+    "login_button": "Login", 
+    "join_button": "Join"
+  },
+  "hero": {
+    "main_heading": "Captivating Short Series on Short Talez",
+    "subheading": "MiniOTT for Everyone",
+    "tagline": "Watch Telugu Short Series",
+    "description": "Join millions creating and watching mini-series",
+    "cta_primary": "Watch Now",
+    "cta_secondary": "Explore"
+  },
+  "sections": {
+    "trending_now": "Ippudu Trending",
+    "editors_picks": "Editor's Picks — Maadi Choice", 
+    "recently_added": "Recently Added — Kotha Kotha",
+    "latest_series": "Kottaga Vacchina Series",
+    "most_watched": "Most Watched — Ekkuva Choosaaru",
+    "popular_series": "Popular Series — Hit Ayyinavi",
+    "new_releases": "New Releases — Fresh Content",
+    "drama_section": "Drama Series — Drama kavali ante",
+    "drama_subtitle": "Drama Kavala?",
+    "romance_subtitle": "Romance Kavala?",
+    "love_section": "Love Series — Prema Stories",
+    "love_subtitle": "Love Kavala?"
+  },
+  "editors_picks": {
+    "subtitle": "Handpicked by our team — Maaku nachindi",
+    "why_picked": "Why we picked this — Enduku choose chesaamu",
+    "pause_auto": "Pause Auto — Auto stop cheyi",
+    "resume_auto": "Resume Auto — Auto start cheyi"
+  },
+  "stats": {
+    "total_views": "Total Views",
+    "active_users": "Active Users", 
+    "series_available": "Series Available",
+    "hours_content": "Hours Content"
+  },
+  "empty_states": {
+    "no_series": "No series available",
+    "no_search_results": "No search results found — try a different search",
+    "start_exploring": "Start exploring",
+    "check_trending": "Check trending",
+    "upload_story": "Upload your story"
+  },
+  "actions": {
+    "watch_now": "Watch Now",
+    "load_more": "Load More", 
+    "refresh": "Refresh",
+    "try_again": "Try Again"
+  },
+  "loading": {
+    "discovering_stories": "Discovering amazing stories...",
+    "loading_content": "Loading content...",
+    "getting_ready": "Getting everything ready..."
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "మీ ఫీడ్ — షార్ట్ టేల్జ్ | వ్యక్తిగత కంటెంట్ ఫీడ్",
+    "description": "మీ వ్యక్తిగత ఫీడ్ చూసుకోండి. ఫాలోయింగ్ క్రియేటర్స్, ట్రెండింగ్ పోస్ట్‌లు, వ్యక్తిగతీకరించిన కంటెంట్ — షార్ట్ టేల్జ్‌లో మీ కోసం క్యూరేటెడ్ కంటెంట్."
+  },
+  "header": {
+    "conversation_lo_join_avvandi": "సంభాషణలో చేరండి!",
+    "meeku_nacchina_creators_ni_follow_cheyadaniki_login_avvandi": "మీకు నచ్చిన క్రియేటర్స్‌ని ఫాలో చేయడానికి లాగిన్ అవ్వండి, మీ ఆలోచనలను పంచుకోండి.",
+    "mee_social_feed": "మీ సోషల్ ఫీడ్",
+    "meeku_follow_ayyina_creators_nundi_amazing_content": "మీకు ఫాలో అయ్యిన క్రియేటర్స్ నుండి అద్భుతమైన కంటెంట్ మరియు ట్రెండింగ్ పోస్ట్‌లు చూడండి"
+  },
+  "actions": {
+    "login_avvandi": "లాగిన్ అవ్వండి",
+    "signup_cheskondi": "సైన్అప్ చేసుకోండి", 
+    "episodes_chudataniki_continue_avvandi": "ఎపిసోడ్‌లు చూడటానికి కొనసాగించండి"
+  },
+  "tabs": {
+    "your_feed": "మీ ఫీడ్",
+    "following": "ఫాలోయింగ్ — ఫాలో చేసినవాళ్లు",
+    "for_you": "మీకోసం", 
+    "trending": "ట్రెండింగ్"
+  },
+  "posts": {
+    "whats_on_your_mind": "మీ మనసులో ఏమి ఉంది?",
+    "share_your_thoughts": "మీ ఆలోచనలను పంచుకోండి...",
+    "post_cheyyandi": "పోస్ట్ చేయండి",
+    "comment_cheyyandi": "కామెంట్ చేయండి",
+    "mee_thoughts_experiences_leda_amazing_moments_share_cheskondi": "మీ ఆలోచనలు, అనుభవాలు, లేదా అద్భుతమైన క్షణాలను పంచుకోండి...",
+    "share_cheskondi": "షేర్ చేసుకోండి",
+    "share_chesthunnam": "షేర్ చేస్తున్నాం...",
+    "post_ayyindhi": "పోస్ట్ అయ్యింది!",
+    "mee_post_successfully_share_ayyindhi": "మీ పోస్ట్ విజయవంతంగా షేర్ అయ్యింది.",
+    "authentication_kavali": "ప్రమాాణీకరణ అవసరం",
+    "post_create_cheyadaniki_login_avvandi": "పోస్ట్ సృష్టించడానికి లాగిన్ అవ్వండి.",
+    "security_error": "సెక్యూరిటీ ఎర్రర్",
+    "authentication_validation_failed": "ప్రమాణీకరణ ధృవీకరణ విఫలమైంది. దయచేసి మళ్లీ సైన్ ఇన్ చేయండి.",
+    "rate_limit_exceeded": "రేట్ లిమిట్ మించిపోయింది",
+    "please_wait_before_creating_another_post": "మరొక పోస్ట్ సృష్టించడానికి ముందు దయచేసి వేచి ఉండండి.",
+    "content_kavali": "కంటెంట్ అవసరం",
+    "post_lo_koncham_content_leda_image_add_cheskondi": "పోస్ట్‌లో కొంచెం కంటెంట్ లేదా చిత్రం జోడించండి.",
+    "failed_to_create_post": "పోస్ట్ సృష్టించడం విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి."
+  },
+  "interactions": {
+    "liked_your_post": "మీ పోస్ట్‌ను లైక్ చేశారు",
+    "commented_on_your_post": "మీ పోస్ట్‌పై కామెంట్ చేశారు",
+    "started_following_you": "మిమ్మల్ని ఫాలో చేశారు",
+    "shared_your_video": "మీ వీడియోను షేర్ చేశారు"
+  },
+  "status": {
+    "live_feed": "లైవ్ ఫీడ్",
+    "following_and_suggestions": "ఫాలోయింగ్ & సూచనలు",
+    "loading_feed": "ఫీడ్ లోడ్ చేస్తున్నాం...",
+    "no_posts_yet": "పోస్ట్‌లు ఇంకా లేవు",
+    "follow_creators": "కంటెంట్ కోసం క్రియేటర్స్‌ను ఫాలో చేయండి"
+  }
+}

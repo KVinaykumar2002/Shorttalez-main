@@ -1,0 +1,105 @@
+<svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="filmGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#333333;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e6c464;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Film Strip Background -->
+  <g class="film-strip" opacity="0">
+    <rect x="20" y="20" width="360" height="80" rx="8" fill="url(#filmGradient)" />
+    <rect x="30" y="30" width="15" height="10" rx="2" fill="#000" />
+    <rect x="50" y="30" width="15" height="10" rx="2" fill="#000" />
+    <rect x="70" y="30" width="15" height="10" rx="2" fill="#000" />
+    <rect x="30" y="80" width="15" height="10" rx="2" fill="#000" />
+    <rect x="50" y="80" width="15" height="10" rx="2" fill="#000" />
+    <rect x="70" y="80" width="15" height="10" rx="2" fill="#000" />
+    
+    <animateOpacity attributeName="opacity" values="0;1" dur="0.6s" begin="0s" fill="freeze" />
+    <animateTransform attributeName="transform" type="translate" values="-100,0;0,0" dur="0.6s" begin="0s" fill="freeze" />
+  </g>
+  
+  <!-- Scene Icons -->
+  <g class="scene-icons" opacity="0">
+    <!-- Play Icon -->
+    <circle cx="120" cy="40" r="8" fill="#e6c464" opacity="0">
+      <animate attributeName="opacity" values="0;1;0" dur="0.3s" begin="0.6s" />
+    </circle>
+    <path d="M116 36 L124 40 L116 44 Z" fill="#000">
+      <animate attributeName="opacity" values="0;1;0" dur="0.3s" begin="0.6s" />
+    </path>
+    
+    <!-- Camera Icon -->
+    <rect x="150" y="75" width="16" height="12" rx="2" fill="#e6c464" opacity="0">
+      <animate attributeName="opacity" values="0;1;0" dur="0.3s" begin="0.66s" />
+    </rect>
+    <circle cx="158" cy="81" r="3" fill="#000" opacity="0">
+      <animate attributeName="opacity" values="0;1;0" dur="0.3s" begin="0.66s" />
+    </circle>
+    
+    <!-- Ticket Icon -->
+    <rect x="320" y="45" width="20" height="12" rx="2" fill="#e6c464" opacity="0">
+      <animate attributeName="opacity" values="0;1;0" dur="0.3s" begin="0.72s" />
+    </rect>
+  </g>
+  
+  <!-- Main Text -->
+  <g class="main-text">
+    <!-- Short -->
+    <text x="140" y="65" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="url(#textGradient)" filter="url(#glow)" opacity="0">
+      Short
+      <animate attributeName="opacity" values="0;1" dur="0.4s" begin="1.4s" fill="freeze" />
+      <animateTransform attributeName="transform" type="scale" values="0.8;1" dur="0.4s" begin="1.4s" fill="freeze" />
+    </text>
+    
+    <!-- Talez -->
+    <text x="220" y="65" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="url(#textGradient)" filter="url(#glow)" opacity="0">
+      Talez
+      <animate attributeName="opacity" values="0;1" dur="0.4s" begin="1.6s" fill="freeze" />
+      <animateTransform attributeName="transform" type="translate" values="0,20;0,0" dur="0.6s" begin="1.6s" fill="freeze" />
+    </text>
+  </g>
+  
+  <!-- Spotlight Flare -->
+  <circle cx="200" cy="60" r="30" fill="url(#textGradient)" opacity="0">
+    <animate attributeName="opacity" values="0;0.3;0" dur="0.5s" begin="1.8s" />
+    <animate attributeName="r" values="10;50;10" dur="0.5s" begin="1.8s" />
+  </circle>
+  
+  <!-- Breathing Animation (Idle Loop) -->
+  <g class="breathing-logo">
+    <animateTransform attributeName="transform" type="scale" values="1;1.015;1" dur="3s" begin="2.3s" repeatCount="indefinite" />
+  </g>
+  
+  <style>
+    .film-strip, .scene-icons, .main-text, .breathing-logo {
+      transform-origin: center;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .film-strip animate,
+      .scene-icons animate,
+      .main-text animate,
+      circle animate,
+      .breathing-logo animateTransform {
+        display: none;
+      }
+      .film-strip, .main-text {
+        opacity: 1 !important;
+      }
+    }
+  </style>
+</svg>

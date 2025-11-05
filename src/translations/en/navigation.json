@@ -1,0 +1,26 @@
+{
+  "bottom_nav": {
+    "home": "Home",
+    "videos": "Videos", 
+    "feed": "My Feed",
+    "profile": "My Profile",
+    "login": "Login",
+    "admin": "Admin"
+  },
+  "navbar": {
+    "notifications": "Notifications",
+    "profile_dropdown": {
+      "profile": "Profile",
+      "settings": "Settings", 
+      "analytics": "Analytics",
+      "logout": "Logout"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "my_content": "My Content",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "help": "Help"
+  }
+}

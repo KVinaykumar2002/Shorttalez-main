@@ -1,0 +1,30 @@
+{
+  "actions": {
+    "reply_cheskondi": "Reply cheskondi",
+    "delete_cheskondi": "Delete cheskondi", 
+    "comment_post_cheskondi": "Comment post cheskondi",
+    "post_chesthunnam": "Post chesthunnam...",
+    "comment_kosam_login_avvandi": "Comment kosam Login avvandi",
+    "sign_in_to_comment": "Comment kosam Login avvandi"
+  },
+  "placeholders": {
+    "meeku_anipinchina_comment_raskandi": "Meeku anipinchina comment raskandi...",
+    "comment_raayaniki_login_avvandi": "Comment raayaniki login avvandi"
+  },
+  "labels": {
+    "comment": "Comment",
+    "comments": "Comments"
+  },
+  "messages": {
+    "error": "Error",
+    "failed_to_post_comment": "Comment post avvaledu. Malli try cheyyandi.",
+    "failed_to_post_reply": "Reply post avvaledu. Malli try cheyyandi.",
+    "are_you_sure_you_want_to_delete_this_comment": "Ee comment delete cheyyaalaa?",
+    "failed_to_delete_comment": "Comment delete avvaledu. Malli try cheyyandi.",
+    "no_comments_yet": "Comments levu inka. First comment meeru cheyyandi!",
+    "comment_kosam_login_avvandi": "Comment kosam login avvandi"
+  },
+  "shortcuts": {
+    "cmd_enter_post_kosam": "⌘+Enter post kosam"
+  }
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<!-- Short Talez Logo Integration Snippet -->
+<!-- Copy this entire block and paste it where you want the logo to appear -->
+
+<div id="short-talez-logo-root" 
+     data-size="medium" 
+     data-loop="true" 
+     data-autoplay="true"
+     aria-label="Short Talez logo"></div>
+
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  const CONFIG = {
+    LOTTIE_URL: '/assets/short-talez-logo.lottie.json',
+    SVG_URL: '/assets/short-talez-logo.svg',
+    FALLBACK_PNG: '/assets/short-talez-logo.png',
+    CSS_URL: '/assets/short-talez-logo-style.css'
+  };
+  
+  // Global API
+  window.ShortTalezLogo = {
+    instance: null,
+    playLogo: function() {
+      if (this.instance && this.instance.play) {
+        this.instance.play();
+      }
+    },
+    stopLogo: function() {
+      if (this.instance && this.instance.stop) {
+        this.instance.stop();
+      }
+    },
+    setLoop: function(loop) {
+      if (this.instance && this.instance.setLoop) {
+        this.instance.setLoop(loop);
+      }
+    }
+  };
+  
+  // Load CSS
+  function loadCSS() {
+    if (document.querySelector('link[href*="short-talez-logo-style.css"]')) return;
+    
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = CONFIG.CSS_URL;
+    document.head.appendChild(link);
+  }
+  
+  // Check if reduced motion is preferred
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+  
+  // Load and initialize Lottie
+  function loadLottie(container, options) {
+    // Try to use existing lottie-web if available
+    if (window.lottie) {
+      initLottie(container, options);
+      return;
+    }
+    
+    // Load lottie-web from CDN
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js';
+    script.onload = () => initLottie(container, options);
+    script.onerror = () => loadSVGFallback(container);
+    document.head.appendChild(script);
+  }
+  
+  // Initialize Lottie animation
+  function initLottie(container, options) {
+    try {
+      const animation = window.lottie.loadAnimation({
+        container: container,
+        renderer: 'svg',
+        loop: options.loop,
+        autoplay: options.autoplay,
+        path: CONFIG.LOTTIE_URL
+      });
+      
+      window.ShortTalezLogo.instance = animation;
+      
+      animation.addEventListener('DOMLoaded', () => {
+        container.setAttribute('aria-hidden', 'false');
+      });
+      
+    } catch (error) {
+      console.warn('Lottie failed to load, falling back to SVG:', error);
+      loadSVGFallback(container);
+    }
+  }
+  
+  // Load animated SVG fallback
+  function loadSVGFallback(container) {
+    fetch(CONFIG.SVG_URL)
+      .then(response => response.text())
+      .then(svgContent => {
+        container.innerHTML = svgContent;
+        container.setAttribute('aria-hidden', 'false');
+        
+        // Simple play/stop API for SVG
+        window.ShortTalezLogo.instance = {
+          play: () => {
+            const svg = container.querySelector('svg');
+            if (svg) {
+              svg.style.animationPlayState = 'running';
+            }
+          },
+          stop: () => {
+            const svg = container.querySelector('svg');
+            if (svg) {
+              svg.style.animationPlayState = 'paused';
+            }
+          }
+        };
+      })
+      .catch(error => {
+        console.warn('SVG failed to load, using PNG fallback:', error);
+        loadPNGFallback(container);
+      });
+  }
+  
+  // Load static PNG fallback
+  function loadPNGFallback(container) {
+    const img = document.createElement('img');
+    img.src = CONFIG.FALLBACK_PNG;
+    img.alt = 'Short Talez';
+    img.className = 'st-logo-fallback';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'contain';
+    
+    img.onload = () => {
+      container.innerHTML = '';
+      container.appendChild(img);
+      container.setAttribute('aria-hidden', 'false');
+    };
+    
+    img.onerror = () => {
+      // Final fallback - text only
+      container.innerHTML = '<div class="st-logo-fallback">Short Talez</div>';
+      container.setAttribute('aria-hidden', 'false');
+    };
+  }
+  
+  // Initialize logo in container
+  function initLogo(container) {
+    if (!container) return;
+    
+    // Load CSS first
+    loadCSS();
+    
+    // Set up container
+    container.className = 'st-logo-container st-logo-loading';
+    container.setAttribute('aria-hidden', 'true');
+    
+    // Get options from data attributes
+    const options = {
+      size: container.dataset.size || 'medium',
+      loop: container.dataset.loop !== 'false',
+      autoplay: container.dataset.autoplay !== 'false'
+    };
+    
+    // Choose loading strategy based on motion preferences
+    if (prefersReducedMotion()) {
+      loadPNGFallback(container);
+    } else {
+      loadLottie(container, options);
+    }
+    
+    // Remove loading class after a short delay
+    setTimeout(() => {
+      container.classList.remove('st-logo-loading');
+    }, 1000);
+  }
+  
+  // Intersection Observer for lazy loading
+  function setupLazyLoading() {
+    const containers = document.querySelectorAll('#short-talez-logo-root');
+    
+    if (!containers.length) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          initLogo(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      rootMargin: '50px'
+    });
+    
+    containers.forEach(container => observer.observe(container));
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupLazyLoading);
+  } else {
+    setupLazyLoading();
+  }
+  
+  // Handle reduced motion preference changes
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mediaQuery.addEventListener('change', (e) => {
+    if (e.matches) {
+      // Switch to static version if motion becomes disabled
+      const containers = document.querySelectorAll('#short-talez-logo-root');
+      containers.forEach(container => {
+        if (!container.querySelector('img')) {
+          loadPNGFallback(container);
+        }
+      });
+    }
+  });
+  
+})();
+</script>
+
+<!-- 
+Usage Examples:
+
+1. Default (medium size, looping):
+<div id="short-talez-logo-root"></div>
+
+2. Large size, play once:
+<div id="short-talez-logo-root" data-size="large" data-loop="false"></div>
+
+3. Small size, manual control:
+<div id="short-talez-logo-root" data-size="small" data-autoplay="false"></div>
+
+4. Control via JavaScript:
+window.ShortTalezLogo.playLogo();
+window.ShortTalezLogo.stopLogo();
+
+Available data attributes:
+- data-size: "small", "medium", "large"
+- data-loop: "true", "false"
+- data-autoplay: "true", "false"
+-->

@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "Your Feed — Short Talez | Personal Content Feed",
+    "description": "Check your personal feed. Following creators, trending posts, personalized content — curated content for you on Short Talez."
+  },
+  "header": {
+    "welcome_to_short_talez": "Welcome to Short Talez!",
+    "join_the_conversation": "Join the conversation and connect with creators",
+    "sign_in_to_continue": "Sign in to continue",
+    "create_new_account": "Create New Account",
+    "continue_browsing_as_guest": "Continue browsing as guest"
+  },
+  "actions": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "continue_watching_episodes": "Continue watching episodes"
+  },
+  "tabs": {
+    "your_feed": "Your Feed",
+    "following": "Following",
+    "for_you": "For You",
+    "trending": "Trending"
+  },
+  "posts": {
+    "whats_on_your_mind": "What's on your mind?",
+    "share_your_thoughts": "Share your thoughts with the community...",
+    "post_something": "Post Something",
+    "create_post": "Create Post"
+  },
+  "interactions": {
+    "liked_your_post": "liked your post",
+    "commented_on_your_post": "commented on your post",
+    "started_following_you": "started following you",
+    "shared_your_video": "shared your video"
+  },
+  "feed": {
+    "live_feed": "Live Feed",
+    "following_and_suggestions": "Following & Suggestions",
+    "loading_your_personalized_feed": "Loading your personalized feed...",
+    "no_posts_in_your_feed_yet": "No posts in your feed yet",
+    "start_following_creators": "Start following creators to see their content here"
+  }
+}

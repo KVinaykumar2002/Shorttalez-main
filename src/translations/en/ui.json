@@ -1,0 +1,39 @@
+{
+  "brand": {
+    "name": "Short Talez",
+    "tagline": "Short Stories"
+  },
+  "episode": "Episode",
+  "episodes": "Episodes",
+  "series": "Series",
+  "views": "views",
+  "new": "New",
+  "hot": "Hot",
+  "trending": "Trending",
+  "watch_now": "Watch Now",
+  "play": "Play",
+  "pause": "Pause",
+  "loading": "Loading...",
+  "load_more": "Load More",
+  "subscribe": "Subscribe",
+  "search": "Search",
+  "romance": "Romance",
+  "romance_section": "Romance Content",
+  "drama": "Drama",
+  "comedy": "Comedy",
+  "action": "Action",
+  "thriller": "Thriller",
+  "feed": {
+    "no_videos_yet": "No videos yet",
+    "be_first_to_share": "Be the first to share a video!",
+    "chill_and_cheel": "Chill and Relax!"
+  },
+  "actions": {
+    "donate": "Donate",
+    "thousand": "K",
+    "million": "M",
+    "bulk_upload": "Bulk Upload",
+    "series_created": "Series Created", 
+    "upload_complete": "Upload Complete"
+  }
+}

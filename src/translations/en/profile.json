@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "title": "Profile — Short Talez | Your Profile Page", 
+    "description": "Manage your profile, posts, creator content, likes on Short Talez. Create content, follow creators."
+  },
+  "header": {
+    "your_profile": "Your Profile",
+    "sign_in_to_access": "Sign in to access your profile, manage your content, and connect with creators",
+    "sign_in": "Sign In",
+    "create_new_account": "Create New Account",
+    "continue_browsing_as_guest": "Continue browsing as guest",
+    "join_thousands": "Join thousands of creators & viewers on Short Talez"
+  },
+  "stats": {
+    "series": "Creator",
+    "followers": "Followers",
+    "following": "Following",
+    "likes": "Likes"
+  },
+  "tabs": {
+    "posts": "Posts",
+    "series": "Creator",
+    "likes": "Likes", 
+    "following": "Following",
+    "settings": "Settings"
+  },
+  "creator": {
+    "creator_dashboard": "Creator Dashboard",
+    "upload_content": "Upload Content",
+    "analytics": "Analytics",
+    "your_series": "Your Creator Content",
+    "become_a_creator": "Become a Creator",
+    "start_creating_and_sharing": "Start creating and sharing your content with the community.",
+    "get_started": "Get Started"
+  },
+  "likes": {
+    "your_liked_episodes": "Your Liked Episodes",
+    "no_liked_episodes": "No liked episodes yet",
+    "start_exploring": "Start exploring and like episodes"
+  },
+  "following": {
+    "you_are_following": "You are following",
+    "following_creators": "Following — Creators",
+    "no_following": "Not following anyone yet",
+    "discover_creators": "Discover amazing creators",
+    "explore_series": "Explore Creator Content"
+  },
+  "settings": {
+    "profile_settings": "Profile Settings",
+    "theme": "Theme", 
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "telugu": "Telugu",
+    "english": "English", 
+    "notifications": "Notifications",
+    "sign_out": "Sign Out"
+  },
+  "messages": {
+    "loading_your_profile": "Loading your profile...",
+    "no_thumbnail": "No thumbnail",
+    "published": "Published",
+    "draft": "Draft",
+    "views": "views"
+  }
+}

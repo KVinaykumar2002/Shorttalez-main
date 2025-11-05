@@ -1,0 +1,26 @@
+{
+  "bottom_nav": {
+    "home": "హోమ్",
+    "videos": "వీడియోలు", 
+    "feed": "నా ఫీడ్",
+    "profile": "నా ప్రొఫైల్",
+    "login": "లాగిన్",
+    "admin": "అడ్మిన్"
+  },
+  "navbar": {
+    "notifications": "నోటిఫికేషన్స్",
+    "profile_dropdown": {
+      "profile": "ప్రొఫైల్",
+      "settings": "సెట్టింగ్స్", 
+      "analytics": "ఎనలిటిక్స్",
+      "logout": "లాగౌట్"
+    }
+  },
+  "sidebar": {
+    "dashboard": "డ్యాష్‌బోర్డ్",
+    "my_content": "నా కంటెంట్",
+    "analytics": "ఎనలిటిక్స్",
+    "settings": "సెట్టింగ్స్",
+    "help": "సహాయం"
+  }
+}

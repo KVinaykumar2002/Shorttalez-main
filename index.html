@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Short Talez - Captivating Short Series & Stories</title>
+    <meta name="description" content="Discover captivating short series and stories on Short Talez. Stream premium episodic content, trending tales, and immersive storytelling experiences. Your next binge-watch awaits!" />
+    <meta name="author" content="Short Talez" />
+    <meta name="keywords" content="short series, stories, streaming, episodes, entertainment, premium content" />
+    
+    <!-- PWA Theme -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-navbutton-color" content="#000000" />
+
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://nxsogkmnimaihoxbpnpd.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="//youtube.com">
+    <link rel="dns-prefetch" href="//vimeo.com">
+    <link rel="dns-prefetch" href="//drive.google.com">
+    <link rel="dns-prefetch" href="//iframe.videodelivery.net">
+    
+    <!-- Critical font preload -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- Rich Blue theme font -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- Premium section heading fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('SW registered'))
+            .catch(() => console.log('SW registration failed'));
+        });
+      }
+    </script>
+    
+    <style>
+      /* Critical CSS for mobile support */
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      
+      @supports (-webkit-touch-callout: none) {
+        html, body {
+          height: -webkit-fill-available;
+        }
+      }
+    </style>
+
+    <meta property="og:title" content="Short Talez - Captivating Short Series & Stories" />
+    <meta property="og:description" content="Discover captivating short series and stories on Short Talez. Stream premium episodic content, trending tales, and immersive storytelling experiences. Your next binge-watch awaits!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/social-thumbnail.jpg" />
+    <meta property="og:url" content="https://your-domain.com" />
+    <meta property="og:site_name" content="Short Talez" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Short Talez - Captivating Short Series & Stories" />
+    <meta name="twitter:description" content="Discover captivating short series and stories on Short Talez. Stream premium episodic content, trending tales, and immersive storytelling experiences." />
+    <meta name="twitter:image" content="/social-thumbnail.jpg" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

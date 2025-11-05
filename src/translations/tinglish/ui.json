@@ -1,0 +1,37 @@
+{
+  "brand": {
+    "name": "Short Talez",
+    "tagline": "చిన్న కథలు"
+  },
+  "episode": "Episode",
+  "episodes": "Episodes",
+  "episodes": "Episodes",
+  "series": "Series", 
+  "views": "views",
+  "new": "NEW",
+  "hot": "HOT",
+  "trending": "Trending",
+  "watch_now": "Ippudu choosandi",
+  "play": "Play cheyyandi",
+  "pause": "Pause cheyyandi",
+  "loading": "Loading avthundi...",
+  "load_more": "Inka load cheyyandi",
+  "subscribe": "Subscribe avandi",
+  "search": "Search cheskondi",
+  "romance": "Romance",
+  "romance_section": "Romance Kaavala?",
+  "drama": "Drama",
+  "comedy": "Comedy",
+  "action": "Action",
+  "thriller": "Thriller",
+  "feed": {
+    "no_videos_yet": "Inka videos levu",
+    "be_first_to_share": "Video share chese modativaru avvandi!",
+    "chill_and_cheel": "Chill and Cheel!"
+  },
+  "actions": {
+    "donate": "Donate cheyyandi",
+    "thousand": "K",
+    "million": "M"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "title": "Short Talez — Short Series & Stories | Telugu Short Films",
+    "description": "Short Talez lo short films & series chooskondi. Create, watch, share — MiniOTT for everyone. Telugu short stories, web series ikkada chooskondi."
+  },
+  "header": {
+    "brand_tagline": "చిన్న కథలు",
+    "search_placeholder": "Series, creators kosam search cheskondi...",
+    "search_button": "Search cheskondi",
+    "login_button": "Login avvandi", 
+    "join_button": "Join cheskondi"
+  },
+  "hero": {
+    "main_heading": "Captivating Short Series — Short Talez lo",
+    "subheading": "MiniOTT for Everyone — Andhari kosam",
+    "tagline": "Telugu Short Series chooskondi",
+    "description": "Join millions creating and watching mini-series",
+    "cta_primary": "Ippudu choosandi",
+    "cta_secondary": "Explore chudandi"
+  },
+  "sections": {
+    "trending_now": "Ippudu Trending",
+    "editors_picks": "Editor's Picks — Maadi Choice", 
+    "recently_added": "Recently Added — Kotha Kotha",
+    "latest_series": "Kottaga Vacchina Series",
+    "most_watched": "Most Watched — Ekkuva Choosaaru",
+    "popular_series": "Popular Series — Hit Ayyinavi",
+    "new_releases": "New Releases — Fresh Content",
+    "drama_section": "Drama Series — Drama kavali ante",
+    "drama_subtitle": "Drama Kaavala?",
+    "love_section": "Love Series — Prema Stories",
+    "love_subtitle": "Prema Kaavala?"
+  },
+  "editors_picks": {
+    "subtitle": "Handpicked by our team — Maaku nachindi",
+    "why_picked": "Why we picked this — Enduku choose chesaamu",
+    "pause_auto": "Pause Auto — Auto stop cheyi",
+    "resume_auto": "Resume Auto — Auto start cheyi"
+  },
+  "stats": {
+    "total_views": "Total Views",
+    "active_users": "Active Users", 
+    "series_available": "Series Available",
+    "hours_content": "Hours Content"
+  },
+  "empty_states": {
+    "no_series": "Series levu bro",
+    "no_search_results": "Kontha results levu — vere search cheyyandi",
+    "start_exploring": "Explore start cheyyandi",
+    "check_trending": "Trending choodu",
+    "upload_story": "Mee story upload cheyyandi"
+  },
+  "actions": {
+    "watch_now": "Ippudu choosandi",
+    "load_more": "Inka load cheyyandi", 
+    "refresh": "Refresh cheskondi",
+    "try_again": "Malli try cheyyandi"
+  },
+  "loading": {
+    "discovering_stories": "Amazing stories discover chesthunnam...",
+    "loading_content": "Content load chesthunnam...",
+    "getting_ready": "Anni ready chesthunnam..."
+  }
+}

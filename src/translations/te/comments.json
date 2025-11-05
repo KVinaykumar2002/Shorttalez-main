@@ -1,0 +1,30 @@
+{
+  "actions": {
+    "reply_cheskondi": "రిప్లై చేయండి",
+    "delete_cheskondi": "డిలీట్ చేయండి", 
+    "comment_post_cheskondi": "కామెంట్ పోస్ట్ చేయండి",
+    "post_chesthunnam": "పోస్ట్ చేస్తున్నాం...",
+    "comment_kosam_login_avvandi": "కామెంట్ కోసం లాగిన్ అవ్వండి",
+    "sign_in_to_comment": "కామెంట్ చేయడానికి లాగిన్ అవ్వండి"
+  },
+  "placeholders": {
+    "meeku_anipinchina_comment_raskandi": "మీకు అనిపించిన కామెంట్ రాయండి...",
+    "comment_raayaniki_login_avvandi": "కామెంట్ రాయడానికి లాగిన్ అవ్వండి"
+  },
+  "labels": {
+    "comment": "కామెంట్",
+    "comments": "కామెంట్‌లు"
+  },
+  "messages": {
+    "error": "లోపం",
+    "failed_to_post_comment": "కామెంట్ పోస్ట్ కాలేదు. మళ్లీ ప్రయత్నించండి.",
+    "failed_to_post_reply": "రిప్లై పోస్ట్ కాలేదు. మళ్లీ ప్రయత్నించండి.",
+    "are_you_sure_you_want_to_delete_this_comment": "ఈ కామెంట్ డిలీట్ చేయాలా?",
+    "failed_to_delete_comment": "కామెంట్ డిలీట్ కాలేదు. మళ్లీ ప్రయత్నించండి.",
+    "no_comments_yet": "కామెంట్‌లు లేవు ఇంకా. మొదటి కామెంట్ మీరు చేయండి!",
+    "comment_kosam_login_avvandi": "కామెంట్ కోసం లాగిన్ అవ్వండి"
+  },
+  "shortcuts": {
+    "cmd_enter_post_kosam": "⌘+Enter పోస్ట్ కోసం"
+  }
+}

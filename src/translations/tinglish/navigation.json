@@ -1,0 +1,26 @@
+{
+  "bottom_nav": {
+    "home": "Home",
+    "videos": "Video lu", 
+    "feed": "Naa Feed",
+    "profile": "Naa Profile",
+    "login": "Login Avvu",
+    "admin": "Admin"
+  },
+  "navbar": {
+    "notifications": "Notifications",
+    "profile_dropdown": {
+      "profile": "Profile",
+      "settings": "Settings", 
+      "analytics": "Analytics",
+      "logout": "Logout cheskondi"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "my_content": "Naa Content",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "help": "Help"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "title": "All Videos — Short Talez | Telugu Short Films & Series",
+    "description": "Anni videos ikkada chooskondi. Latest uploads, trending content, most liked videos — Short Talez lo Telugu short films & series."
+  },
+  "content": {
+    "all_videos": "Anni Videos",
+    "trending_videos": "Trending Videos",
+    "latest_uploads": "Latest Uploads — Kotha Uploads",
+    "most_liked": "Most Liked — Ekkuva Likes",
+    "watch_later": "Watch Later — Tharuvatha Choodu",
+    "your_favorites": "Mee Favorites"
+  },
+  "actions": {
+    "play": "Play cheyyandi",
+    "like": "Like cheyyandi", 
+    "share": "Share cheyyandi",
+    "comment": "Comment cheyyandi",
+    "follow": "Follow avandi",
+    "load_more": "Inka Load cheskondi"
+  },
+  "filters": {
+    "filter_by_genre": "Genre prakaram filter cheyyandi",
+    "sort_by": "Sort cheyyandi",
+    "duration": "Duration",
+    "upload_date": "Upload Date", 
+    "view_count": "View Count"
+  },
+  "messages": {
+    "login_required": "Login Required",
+    "please_log_in_to_like_episodes": "Episode like cheyadaniki login avvandi",
+    "loading_amazing_videos": "Amazing videos load chesthunnam...",
+    "error_loading_videos": "Videos load avvaledu",
+    "please_try_refreshing_the_page": "Page refresh cheyyandi",
+    "ee_series_lo_inka_episodes": "Ee Series lo inka episodes",
+    "episode": "Episode",
+    "inka_load_cheskondi": "Inka Load cheskondi"
+  },
+  "stats": {
+    "views": "views",
+    "likes": "likes", 
+    "comments": "comments",
+    "episodes": "episodes"
+  }
+}
