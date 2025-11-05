@@ -827,7 +827,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <video
           ref={videoRef}
           className="w-full h-full object-cover bg-black"
-          src={proxiedUrl}
+          src={isIOS && !hasInteracted ? undefined : proxiedUrl}
           poster={thumbnailUrl || undefined}
           muted={muted}
           autoPlay={autoPlay}
@@ -838,12 +838,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             // iOS requires user interaction for audio
             if (isIOS && !hasInteracted && videoRef.current) {
               setHasInteracted(true);
+              try { (videoRef.current as HTMLVideoElement).src = proxiedUrl; (videoRef.current as HTMLVideoElement).load(); } catch {}
               enableAudioForVideo(videoRef.current);
             }
           }}
           preload={isIOS ? 'auto' : preload}
           playsInline
           webkit-playsinline="true"
+          x-webkit-airplay="allow"
           disablePictureInPicture
           crossOrigin="anonymous"
           onPlay={() => {
@@ -944,7 +946,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <video
           ref={videoRef}
           className="w-full h-full object-cover bg-black"
-          src={videoUrl}
+          src={isIOS && !hasInteracted ? undefined : videoUrl}
           poster={thumbnailUrl || undefined}
           muted={muted}
           autoPlay={autoPlay}
@@ -955,12 +957,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             // iOS requires user interaction for audio
             if (isIOS && !hasInteracted && videoRef.current) {
               setHasInteracted(true);
+              try { (videoRef.current as HTMLVideoElement).src = videoUrl; (videoRef.current as HTMLVideoElement).load(); } catch {}
               enableAudioForVideo(videoRef.current);
             }
           }}
           preload={isIOS ? 'auto' : preload}
           playsInline
           webkit-playsinline="true"
+          x-webkit-airplay="allow"
           disablePictureInPicture
           crossOrigin="anonymous"
           onPlay={() => {
@@ -975,8 +979,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           onLoadStart={() => { if (!isIOS) setIsLoading(true); }}
           onLoadedData={handleVideoLoad}
           onCanPlay={handleVideoCanPlay}
-          onWaiting={handleVideoWaiting}
-          onError={handleVideoError}
+          onWaiting={() => { if (!isIOS) handleVideoWaiting(); }}
+          onError={(e: any) => {
+            const v = videoRef.current;
+            console.error('[iOS Video] onError', { code: v?.error?.code, networkState: v?.networkState, readyState: v?.readyState, src: isIOS && !hasInteracted ? undefined : videoUrl });
+            handleVideoError(e);
+          }}
           onProgress={() => setIsBuffering(false)}
         >
           {/\.m3u8($|\?)/i.test(videoUrl) ? (

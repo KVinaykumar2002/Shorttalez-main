@@ -120,6 +120,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     const ytPlayerRef = useRef<any>(null);
     const playerIdRef = useRef(`yt-${Date.now()}-${Math.random()}`);
     const controlsTimer = useRef<NodeJS.Timeout | null>(null);
+    const stallTimer = useRef<NodeJS.Timeout | null>(null);
     const retryCount = useRef(0);
     const MAX_RETRIES = 3;
 
@@ -695,13 +696,14 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
               width: "100%",
               height: "100%",
             }}
-            src={videoSrc}
+            src={isIOS && !hasInteracted ? undefined : videoSrc}
             poster={thumbnailUrl}
             muted={muted}
             autoPlay={effectiveAutoPlay}
             preload={isIOS ? "auto" : "metadata"}
             playsInline
             webkit-playsinline="true"
+            x-webkit-airplay="allow"
             x5-playsinline="true"
             x5-video-player-type="h5"
             x5-video-player-fullscreen="true"
@@ -712,6 +714,8 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
               // iOS requires user interaction for audio
               if (isIOS && !hasInteracted && videoRef.current) {
                 setHasInteracted(true);
+                // Assign src only after interaction to avoid stall bugs
+                try { (videoRef.current as HTMLVideoElement).src = videoSrc; (videoRef.current as HTMLVideoElement).load(); } catch {}
                 enableAudioForVideo(videoRef.current);
               }
             }}
@@ -721,7 +725,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
             }}
             onError={(e: any) => {
               const v = videoRef.current;
-              console.error('[iOS Video] onError', { error: e?.message, networkState: v?.networkState, readyState: v?.readyState, src: videoSrc });
+              console.error('[iOS Video] onError', { error: e?.message, code: v?.error?.code, networkState: v?.networkState, readyState: v?.readyState, src: videoSrc });
               onDirectError();
             }}
             onPlay={() => {
@@ -755,6 +759,17 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
             onSeeked={() => setBuffering(false)}
             onLoadedMetadata={() => {
               console.log('[iOS Video] onLoadedMetadata');
+              const v = videoRef.current;
+              // Stall fallback: if not enough data to play within 2s, retry
+              if (stallTimer.current) clearTimeout(stallTimer.current);
+              stallTimer.current = setTimeout(() => {
+                if (!v) return;
+                const rs = v.readyState; // 0-4
+                if (rs < 3) {
+                  console.warn('[iOS Video] Stall detected, reloading source');
+                  try { v.load(); } catch {}
+                }
+              }, 2000);
               setLoading(false);
             }}
           >

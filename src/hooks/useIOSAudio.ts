@@ -31,6 +31,24 @@ export const useIOSAudio = () => {
     }
   }, [audioContext, isIOS]);
 
+  // Ensure WebKit resumes audio context on any touch gesture
+  useEffect(() => {
+    if (!isIOS) return;
+    const resumeAudio = () => {
+      try {
+        if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume().catch(() => {});
+        }
+      } catch {}
+    };
+    document.addEventListener('touchstart', resumeAudio, { passive: true });
+    document.addEventListener('click', resumeAudio, { passive: true });
+    return () => {
+      document.removeEventListener('touchstart', resumeAudio as any);
+      document.removeEventListener('click', resumeAudio as any);
+    };
+  }, [isIOS, audioContext]);
+
   // Enable audio for video element (must be called from user interaction)
   const enableAudioForVideo = useCallback((videoElement: HTMLVideoElement) => {
     if (isIOS && videoElement) {

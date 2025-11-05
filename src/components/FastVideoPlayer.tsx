@@ -31,6 +31,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
   const [showControls, setShowControls] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const stallTimer = useRef<NodeJS.Timeout | null>(null);
   const { isIOS, enableAudioForVideo } = useIOSAudio();
   
   const isYouTubeUrl = (url: string): boolean => {
@@ -78,6 +79,9 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
     setHasInteracted(true);
     
     try {
+      if (isIOS && !video.src) {
+        try { video.src = videoUrl; video.load(); } catch {}
+      }
       if (playing) {
         video.pause();
         setPlaying(false);
@@ -173,7 +177,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
       >
         <video
           ref={videoRef}
-          src={videoUrl}
+          src={isIOS && !hasInteracted ? undefined : videoUrl}
           className="w-full h-full object-cover"
           onEnded={handleVideoEnd}
           onLoadStart={() => {
@@ -187,10 +191,21 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
           onLoadedData={(e) => {
             console.log('[iOS Video] onLoadedData', { readyState: (e.target as HTMLVideoElement)?.readyState });
           }}
+          onLoadedMetadata={() => {
+            const v = videoRef.current;
+            if (stallTimer.current) clearTimeout(stallTimer.current);
+            stallTimer.current = setTimeout(() => {
+              if (!v) return;
+              if (v.readyState < 3) {
+                console.warn('[iOS Video] Stall detected, reloading');
+                try { v.load(); } catch {}
+              }
+            }, 2000);
+          }}
           onPlay={() => console.log('[iOS Video] onPlay')}
           onError={(e: any) => {
             const v = videoRef.current;
-            console.error('[iOS Video] onError', { error: e?.message, networkState: v?.networkState, readyState: v?.readyState, src: videoUrl });
+            console.error('[iOS Video] onError', { error: e?.message, code: v?.error?.code, networkState: v?.networkState, readyState: v?.readyState, src: videoUrl });
             setError(true);
           }}
           onTouchStart={(e) => {
@@ -198,11 +213,13 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
             if (isIOS && !hasInteracted && videoRef.current) {
               setHasInteracted(true);
               enableAudioForVideo(videoRef.current);
+              try { (videoRef.current as HTMLVideoElement).src = videoUrl; (videoRef.current as HTMLVideoElement).load(); } catch {}
             }
           }}
           preload={isIOS ? "auto" : "metadata"}
           playsInline
           webkit-playsinline="true"
+          x-webkit-airplay="allow"
           controls={true}
           disablePictureInPicture
           crossOrigin="anonymous"
