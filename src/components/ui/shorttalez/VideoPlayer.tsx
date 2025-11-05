@@ -92,14 +92,16 @@ export default function VideoPlayer({
     // Force eager buffering for reels-like experience
     try { v.preload = 'auto'; v.load(); } catch {}
 
-    v.play().catch((err) => {
-      console.log('[iOS Audio] Autoplay prevented:', err);
-      // On iOS, don't force mute - wait for user interaction
-      if (isIOS && err?.name === 'NotAllowedError') {
+    // Avoid autoplay attempt on iOS to prevent policy block; wait for tap
+    if (!isIOS) {
+      v.play().catch((err) => {
+        console.log('[iOS Audio] Autoplay prevented:', err);
         setIsPlaying(false);
-      }
-    });
-    setIsPlaying(!v.paused);
+      });
+      setIsPlaying(!v.paused);
+    } else {
+      setIsPlaying(false);
+    }
 
     // Hide overlay after 3 seconds
     const hideTimer = setTimeout(() => setShowOverlay(false), 3000);

@@ -178,7 +178,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
           onEnded={handleVideoEnd}
           onLoadStart={() => {
             console.log('[iOS Video] onLoadStart', { url: videoUrl });
-            setLoading(true);
+            if (!isIOS) setLoading(true);
           }}
           onCanPlay={() => {
             console.log('[iOS Video] onCanPlay');
@@ -240,7 +240,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
                   disabled={loading}
                   className="text-white hover:bg-white/20"
                 >
-                  {loading ? (
+                  {loading && !isIOS ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : playing ? (
                     <Pause className="w-4 h-4" />

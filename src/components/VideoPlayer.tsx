@@ -855,7 +855,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             setInternalPlaying(false);
             onPlayStateChange?.(false);
           }}
-          onLoadStart={() => setIsLoading(true)}
+          onLoadStart={() => { if (!isIOS) setIsLoading(true); }}
           onLoadedData={handleVideoLoad}
           onCanPlay={handleVideoCanPlay}
           onWaiting={handleVideoWaiting}
@@ -966,7 +966,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             setInternalPlaying(false);
             onPlayStateChange?.(false);
           }}
-          onLoadStart={() => setIsLoading(true)}
+          onLoadStart={() => { if (!isIOS) setIsLoading(true); }}
           onLoadedData={handleVideoLoad}
           onCanPlay={handleVideoCanPlay}
           onWaiting={handleVideoWaiting}

@@ -667,6 +667,14 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
       const videoSrc = (isDirectVideo && instantLoad.videoSrc) ? instantLoad.videoSrc : getEmbedUrl();
       // Disable skeleton on iOS to avoid visual delays
       const showSkeleton = !isIOS && isDirectVideo && instantLoad.isLoading && !canPlay;
+      const effectiveAutoPlay = isIOS ? false : autoPlay;
+
+      // Eager buffer on iOS when source changes
+      useEffect(() => {
+        if (isIOS && videoRef.current) {
+          try { videoRef.current.preload = 'auto'; videoRef.current.load(); } catch {}
+        }
+      }, [isIOS, videoSrc]);
 
       return (
         <>
@@ -690,7 +698,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
             src={videoSrc}
             poster={thumbnailUrl}
             muted={muted}
-            autoPlay={autoPlay}
+            autoPlay={effectiveAutoPlay}
             preload={isIOS ? "auto" : "metadata"}
             playsInline
             webkit-playsinline="true"
