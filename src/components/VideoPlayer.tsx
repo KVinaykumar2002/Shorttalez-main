@@ -861,7 +861,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           onWaiting={handleVideoWaiting}
           onError={handleVideoError}
           onProgress={() => setIsBuffering(false)}
-        />
+        >
+          {/\.m3u8($|\?)/i.test(proxiedUrl) ? (
+            <source src={proxiedUrl} type="application/vnd.apple.mpegurl" />
+          ) : (
+            <source src={proxiedUrl} type="video/mp4" />
+          )}
+        </video>
 
         {/* Fallback thumbnail */}
         {thumbnailUrl && !playing && (
@@ -972,7 +978,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           onWaiting={handleVideoWaiting}
           onError={handleVideoError}
           onProgress={() => setIsBuffering(false)}
-        />
+        >
+          {/\.m3u8($|\?)/i.test(videoUrl) ? (
+            <source src={videoUrl} type="application/vnd.apple.mpegurl" />
+          ) : (
+            <source src={videoUrl} type="video/mp4" />
+          )}
+        </video>
 
         {/* Fallback thumbnail */}
         {thumbnailUrl && !playing && (

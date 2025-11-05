@@ -757,7 +757,14 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
               console.log('[iOS Video] onLoadedMetadata');
               setLoading(false);
             }}
-          />
+          >
+            {/* Provide explicit source type for better iOS handling */}
+            {/\.m3u8($|\?)/i.test(videoSrc) ? (
+              <source src={videoSrc} type="application/vnd.apple.mpegurl" />
+            ) : (
+              <source src={videoSrc} type="video/mp4" />
+            )}
+          </video>
           
           {/* Cached indicator badge */}
           {isDirectVideo && instantLoad.videoSrc && !instantLoad.isLoading && (

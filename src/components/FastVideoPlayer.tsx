@@ -207,7 +207,13 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
           disablePictureInPicture
           crossOrigin="anonymous"
           muted={muted}
-        />
+        >
+          {/\.m3u8($|\?)/i.test(videoUrl) ? (
+            <source src={videoUrl} type="application/vnd.apple.mpegurl" />
+          ) : (
+            <source src={videoUrl} type="video/mp4" />
+          )}
+        </video>
         
         {/* Thumbnail overlay when not playing */}
         {!playing && thumbnailUrl && (
