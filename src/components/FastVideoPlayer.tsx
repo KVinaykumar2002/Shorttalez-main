@@ -71,6 +71,25 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
     return url;
   };
 
+  // Wait until video has enough data to play (readyState >= 3) or timeout
+  const waitForReady = (video: HTMLVideoElement, timeoutMs = 1500) =>
+    new Promise<void>((resolve) => {
+      if (video.readyState >= 3) return resolve();
+      let done = false;
+      const onReady = () => {
+        if (!done && video.readyState >= 3) { done = true; cleanup(); resolve(); }
+      };
+      const cleanup = () => {
+        video.removeEventListener('canplay', onReady);
+        video.removeEventListener('canplaythrough', onReady);
+        video.removeEventListener('loadeddata', onReady);
+      };
+      video.addEventListener('canplay', onReady);
+      video.addEventListener('canplaythrough', onReady);
+      video.addEventListener('loadeddata', onReady);
+      setTimeout(() => { if (!done) { cleanup(); resolve(); } }, timeoutMs);
+    });
+
   const togglePlay = useCallback(async () => {
     if (!videoRef.current) return;
     
@@ -93,6 +112,8 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
           video.volume = 1;
           enableAudioForVideo(video);
         }
+        // Ensure enough data before play to avoid initial stall
+        await waitForReady(video, 1500);
         await video.play();
         setPlaying(true);
         setLoading(false);
