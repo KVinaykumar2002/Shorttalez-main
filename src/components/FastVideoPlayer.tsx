@@ -175,7 +175,14 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
     return (
       <div 
         className={`relative w-full aspect-video bg-black rounded-lg overflow-hidden group cursor-pointer ${className}`}
-        onClick={() => setShowControls(!showControls)}
+        onClick={() => {
+          // If not playing, interpret first tap as intent to play (iOS-friendly)
+          if (!playing) {
+            togglePlay();
+          } else {
+            setShowControls(!showControls);
+          }
+        }}
       >
         <video
           ref={videoRef}
@@ -251,7 +258,11 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
         
         {/* Thumbnail overlay when not playing */}
         {!playing && thumbnailUrl && (
-          <div className="absolute inset-0 bg-black">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black"
+            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+          >
             <OptimizedImage
               src={thumbnailUrl}
               alt="Video thumbnail"
@@ -262,7 +273,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
                 <Play className="w-8 h-8 text-gray-800 ml-1" />
               </div>
             </div>
-          </div>
+          </button>
         )}
         
         {/* Controls */}
