@@ -89,6 +89,8 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
         setLoading(true);
         // Enable audio on iOS on user interaction
         if (isIOS && !muted) {
+          video.muted = false;
+          video.volume = 1;
           enableAudioForVideo(video);
         }
         await video.play();
@@ -212,8 +214,23 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
             // iOS requires user interaction for audio
             if (isIOS && !hasInteracted && videoRef.current) {
               setHasInteracted(true);
-              enableAudioForVideo(videoRef.current);
-              try { (videoRef.current as HTMLVideoElement).src = videoUrl; (videoRef.current as HTMLVideoElement).load(); } catch {}
+              const v = videoRef.current as HTMLVideoElement;
+              try {
+                // Assign source only on gesture to avoid Safari stall
+                if (!v.src) { v.src = videoUrl; v.load(); }
+                // Ensure audio is enabled
+                v.muted = false;
+                v.volume = 1;
+                enableAudioForVideo(v);
+                // Try immediate play
+                const p = v.play();
+                if (p && typeof p.then === 'function') {
+                  p.catch(() => {
+                    // If play fails, show controls; user can tap play again
+                    setError(false);
+                  });
+                }
+              } catch {}
             }
           }}
           preload={isIOS ? "auto" : "metadata"}
