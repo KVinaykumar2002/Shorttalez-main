@@ -240,13 +240,20 @@ export default function VideoPlayer({
         poster={video.poster}
         playsInline
         webkit-playsinline="true"
-        preload="auto"
+        preload="metadata"
         controls={true}
         disablePictureInPicture
         crossOrigin="anonymous"
         className="w-full h-full object-cover cursor-pointer"
         loop={false}
         onClick={handleVideoClick}
+        onLoadedData={(e) => {
+          console.log('[iOS Video] onLoadedData', { url: videoSrc, readyState: (e.target as HTMLVideoElement)?.readyState });
+        }}
+        onError={(e: any) => {
+          const v = videoRef.current;
+          console.error('[iOS Video] onError', { error: e?.message, networkState: v?.networkState, readyState: v?.readyState, src: videoSrc });
+        }}
         onTouchStart={(e) => {
           // iOS requires user interaction for audio
           if (isIOS && !hasUserInteracted && videoRef.current) {

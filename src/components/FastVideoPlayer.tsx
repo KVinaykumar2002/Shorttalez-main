@@ -42,7 +42,7 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
   };
 
   const isDirectVideo = (url: string): boolean => {
-    return url.match(/\.(mp4|webm|ogg)$/i) !== null;
+    return url.match(/\.(mp4|webm|ogg|m3u8)$/i) !== null;
   };
 
   const getYouTubeEmbedUrl = (url: string): string => {
@@ -176,9 +176,23 @@ const FastVideoPlayer = memo<FastVideoPlayerProps>(({
           src={videoUrl}
           className="w-full h-full object-cover"
           onEnded={handleVideoEnd}
-          onLoadStart={() => setLoading(true)}
-          onCanPlay={() => setLoading(false)}
-          onError={() => setError(true)}
+          onLoadStart={() => {
+            console.log('[iOS Video] onLoadStart', { url: videoUrl });
+            setLoading(true);
+          }}
+          onCanPlay={() => {
+            console.log('[iOS Video] onCanPlay');
+            setLoading(false);
+          }}
+          onLoadedData={(e) => {
+            console.log('[iOS Video] onLoadedData', { readyState: (e.target as HTMLVideoElement)?.readyState });
+          }}
+          onPlay={() => console.log('[iOS Video] onPlay')}
+          onError={(e: any) => {
+            const v = videoRef.current;
+            console.error('[iOS Video] onError', { error: e?.message, networkState: v?.networkState, readyState: v?.readyState, src: videoUrl });
+            setError(true);
+          }}
           onTouchStart={(e) => {
             // iOS requires user interaction for audio
             if (isIOS && !hasInteracted && videoRef.current) {

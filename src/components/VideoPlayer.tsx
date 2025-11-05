@@ -417,6 +417,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Check if URL is a direct video file
   const isDirectVideoUrl = (url: string): boolean => {
+    // Include HLS for iOS native playback
+    if (/\.(m3u8)$/i.test(url)) return true;
     return url.match(/\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)$/i) !== null ||
            url.includes('.supabase.co/storage/'); // Supabase storage URLs
   };

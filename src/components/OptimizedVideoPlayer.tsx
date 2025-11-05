@@ -174,6 +174,8 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
       if (u.includes("drive.google.com")) return "gdrive";
       if (u.includes("videodelivery.net") || u.includes("iframe.videodelivery.net")) return "cloudflare";
       if (u.includes("pcloud.link") || u.includes("u.pcloud.link")) return "pcloud";
+      // Treat HLS as direct for iOS native playback
+      if (/\.(m3u8)$/i.test(u)) return "direct";
       if (/\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)$/i.test(u) || u.includes(".supabase.co/storage/")) return "direct";
       return "iframe";
     }, [sanitizedUrl]);
@@ -688,7 +690,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
             poster={thumbnailUrl}
             muted={muted}
             autoPlay={autoPlay}
-            preload="auto"
+            preload="metadata"
             playsInline
             webkit-playsinline="true"
             x5-playsinline="true"
@@ -704,26 +706,47 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
                 enableAudioForVideo(videoRef.current);
               }
             }}
-            onLoadedData={onDirectLoad}
-            onError={onDirectError}
-            onPlay={onDirectPlay}
+            onLoadedData={(e) => {
+              console.log('[iOS Video] onLoadedData', { url: videoSrc, readyState: (e.target as HTMLVideoElement)?.readyState });
+              onDirectLoad();
+            }}
+            onError={(e: any) => {
+              const v = videoRef.current;
+              console.error('[iOS Video] onError', { error: e?.message, networkState: v?.networkState, readyState: v?.readyState, src: videoSrc });
+              onDirectError();
+            }}
+            onPlay={() => {
+              console.log('[iOS Video] onPlay');
+              onDirectPlay();
+            }}
             onPause={onDirectPause}
             onEnded={onEnded}
             onTimeUpdate={onDirectTimeUpdate}
-            onWaiting={() => setBuffering(true)}
+            onWaiting={() => {
+              console.log('[iOS Video] onWaiting');
+              setBuffering(true);
+            }}
             onCanPlay={() => {
+              console.log('[iOS Video] onCanPlay');
               setBuffering(false);
               setLoading(false);
               setError(false);
             }}
             onCanPlayThrough={() => {
+              console.log('[iOS Video] onCanPlayThrough');
               setBuffering(false);
               setLoading(false);
             }}
-            onLoadStart={() => setLoading(true)}
+            onLoadStart={() => {
+              console.log('[iOS Video] onLoadStart', { url: videoSrc });
+              setLoading(true);
+            }}
             onSeeking={() => setBuffering(true)}
             onSeeked={() => setBuffering(false)}
-            onLoadedMetadata={() => setLoading(false)}
+            onLoadedMetadata={() => {
+              console.log('[iOS Video] onLoadedMetadata');
+              setLoading(false);
+            }}
           />
           
           {/* Cached indicator badge */}
