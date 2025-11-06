@@ -82,23 +82,8 @@ export const useIOSAudio = () => {
         });
       }
       
-      // If video is paused, play it
-      if (videoElement.paused) {
-        const playPromise = videoElement.play();
-        if (playPromise) {
-          playPromise.catch((error) => {
-            console.log('iOS audio playback error:', error);
-            // Don't force mute on iOS - wait for user interaction
-            if (error?.name !== 'NotAllowedError') {
-              // Fallback: try one more time only for non-autoplay errors
-              setTimeout(() => {
-                videoElement.muted = false;
-                videoElement.play().catch(() => {});
-              }, 100);
-            }
-          });
-        }
-      }
+      // Don't auto-play here - let the play button handle playback
+      // This ensures user has control and avoids conflicts
       
       setAudioEnabled(true);
     }

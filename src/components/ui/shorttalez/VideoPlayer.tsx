@@ -27,9 +27,9 @@ export default function VideoPlayer({
   onFollow,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false); // Start paused - user must interact to play
   const [showOverlay, setShowOverlay] = useState(true);
-  const [isMuted, setIsMuted] = useState(false); // Start unmuted - will be enabled on first user gesture
+  const [isMuted, setIsMuted] = useState(true); // Start muted for autoplay policy compliance
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
@@ -75,17 +75,16 @@ export default function VideoPlayer({
     // Reset interaction state when video changes
     setHasUserInteracted(false);
     
-    // On iOS, don't force mute - wait for user interaction
-    // On other platforms, start muted for autoplay policy compliance
-    if (!isIOS) {
-      v.muted = true;
-    }
+    // Set initial audio state
+    // Start muted until user interaction (iOS and Android autoplay policy)
+    // Use setIsMuted to update state, which will update the muted prop
+    setIsMuted(true);
     v.volume = 1.0;
     
     // Log audio capabilities for debugging
-    console.log('[iOS Audio Debug]', {
+    console.log('[Video Player] Initializing', {
       videoId: video.id,
-      muted: v.muted,
+      muted: isMuted,
       volume: v.volume,
       paused: v.paused,
       readyState: v.readyState,
@@ -94,25 +93,18 @@ export default function VideoPlayer({
       isIOS
     });
     
-    // Force eager buffering for reels-like experience
-    // On iOS, only call load() after user interaction to avoid blocking
+    // Always call load() - iOS won't block it if we're not auto-playing
+    // The key is that we don't call play() until user interaction
     try { 
       v.preload = 'auto';
-      if (!isIOS || hasUserInteracted) {
-        v.load();
-      }
-    } catch {}
-
-    // Avoid autoplay attempt on iOS to prevent policy block; wait for tap
-    if (!isIOS) {
-      v.play().catch((err) => {
-        console.log('[iOS Audio] Autoplay prevented:', err);
-        setIsPlaying(false);
-      });
-      setIsPlaying(!v.paused);
-    } else {
-      setIsPlaying(false);
+      v.load();
+    } catch (err) {
+      console.warn('[Video Player] Error calling load():', err);
     }
+
+    // Don't autoplay - wait for user interaction (iOS and Android autoplay policies)
+    // This ensures videos play correctly on all devices
+    setIsPlaying(false);
 
     // Hide overlay after 3 seconds
     const hideTimer = setTimeout(() => setShowOverlay(false), 3000);
@@ -120,20 +112,14 @@ export default function VideoPlayer({
     return () => clearTimeout(hideTimer);
   }, [video.id, isIOS]);
 
-  // When user interacts on iOS, call load() if not already called
+  // Sync muted state with video element (important for iOS timing)
   useEffect(() => {
-    if (isIOS && hasUserInteracted) {
-      const v = videoRef.current;
-      if (v && v.src && v.readyState === 0) {
-        try {
-          v.load();
-          console.log('[iOS Video] load() called after user interaction');
-        } catch (err) {
-          console.warn('[iOS Video] Error calling load() after interaction:', err);
-        }
-      }
+    const v = videoRef.current;
+    if (v) {
+      v.muted = isMuted;
+      v.volume = 1.0;
     }
-  }, [hasUserInteracted, isIOS]);
+  }, [isMuted]);
 
   // Update progress
   useEffect(() => {
@@ -200,35 +186,6 @@ export default function VideoPlayer({
     setTimeout(() => setShowLikeAnimation(false), 1000);
   }, [video.id, onToggleLike]);
 
-  // Wait until video has enough data to play (readyState >= 3) or timeout
-  const waitForReady = useCallback((video: HTMLVideoElement, timeoutMs = 2000) => {
-    return new Promise<void>((resolve) => {
-      if (video.readyState >= 3) return resolve();
-      let done = false;
-      const onReady = () => {
-        if (!done && video.readyState >= 3) {
-          done = true;
-          cleanup();
-          resolve();
-        }
-      };
-      const cleanup = () => {
-        video.removeEventListener('canplay', onReady);
-        video.removeEventListener('canplaythrough', onReady);
-        video.removeEventListener('loadeddata', onReady);
-      };
-      video.addEventListener('canplay', onReady);
-      video.addEventListener('canplaythrough', onReady);
-      video.addEventListener('loadeddata', onReady);
-      setTimeout(() => {
-        if (!done) {
-          cleanup();
-          resolve(); // Resolve even if not ready
-        }
-      }, timeoutMs);
-    });
-  }, []);
-
   const togglePlayPause = useCallback(async () => {
     const v = videoRef.current;
     if (!v) return;
@@ -237,31 +194,28 @@ export default function VideoPlayer({
       await triggerHaptic(ImpactStyle.Light);
     }
 
-    // On first interaction, enable audio for iOS (iOS requirement) - ALWAYS force unmute
+    // On first interaction, enable audio (iOS and Android)
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
-      if (isIOS) {
-        // Set src only after user interaction to avoid iOS blocking
-        if (!v.src) {
-          v.src = videoSrc;
-          v.load();
-          // Wait for video to have enough data before playing
-          await waitForReady(v, 2000);
-        }
-        // Force unmute on iOS for user interaction
-        v.muted = false;
-        v.volume = 1;
-        enableAudioForVideo(v);
-      } else {
-        v.muted = false;
-      }
+      
+      // Force unmute on first user interaction (all platforms)
+      // Use setIsMuted to update state, which will update the muted prop
       setIsMuted(false);
-      console.log('[iOS Audio] Enabled audio on first user interaction');
-    } else if (isIOS) {
-      // Ensure audio stays enabled on iOS
-      v.muted = false;
       v.volume = 1;
-      enableAudioForVideo(v);
+      
+      // Enable audio on iOS
+      if (isIOS) {
+        enableAudioForVideo(v);
+      }
+      
+      console.log('[Video Player] Audio enabled on first user interaction', { isIOS });
+    } else {
+      // Ensure audio stays enabled on all platforms
+      setIsMuted(false);
+      v.volume = 1;
+      if (isIOS) {
+        enableAudioForVideo(v);
+      }
     }
 
     if (isPlaying) {
@@ -269,21 +223,34 @@ export default function VideoPlayer({
       setIsPlaying(false);
     } else {
       try {
-        // Ensure video has enough data before playing
+        // Wait for video to be ready if needed
         if (v.readyState < 3) {
-          await waitForReady(v, 2000);
+          // Wait for canplay event or timeout
+          await new Promise<void>((resolve) => {
+            if (v.readyState >= 3) {
+              resolve();
+              return;
+            }
+            const onCanPlay = () => {
+              v.removeEventListener('canplay', onCanPlay);
+              resolve();
+            };
+            v.addEventListener('canplay', onCanPlay);
+            setTimeout(() => {
+              v.removeEventListener('canplay', onCanPlay);
+              resolve();
+            }, 2000);
+          });
         }
+        
         await v.play();
         setIsPlaying(true);
-      } catch (err) {
-        console.log('[iOS Audio] Play error:', err);
-        // On iOS, don't force mute - wait for user interaction
-        if (isIOS && err?.name === 'NotAllowedError' && !hasUserInteracted) {
-          setIsPlaying(false);
-        }
+      } catch (err: any) {
+        console.warn('[Video Player] Play error:', err);
+        setIsPlaying(false);
       }
     }
-  }, [isPlaying, isMobile, triggerHaptic, hasUserInteracted, isIOS, enableAudioForVideo, videoSrc, waitForReady]);
+  }, [isPlaying, isMobile, triggerHaptic, hasUserInteracted, isIOS, enableAudioForVideo]);
 
   const toggleMute = useCallback(async () => {
     const v = videoRef.current;
@@ -293,9 +260,15 @@ export default function VideoPlayer({
       await triggerHaptic(ImpactStyle.Light);
     }
 
-    v.muted = !v.muted;
-    setIsMuted(v.muted);
-  }, [isMobile, triggerHaptic]);
+    // Toggle mute state - use setIsMuted to update state, which will update the muted prop
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    
+    // If unmuting on iOS, ensure audio is enabled
+    if (!newMuted && isIOS) {
+      enableAudioForVideo(v);
+    }
+  }, [isMobile, triggerHaptic, isMuted, isIOS, enableAudioForVideo]);
 
   return (
     <div className="relative w-full h-[100dvh] bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden">
@@ -316,121 +289,108 @@ export default function VideoPlayer({
       
       <video
         ref={videoRef}
-        src={isIOS && !hasUserInteracted ? undefined : videoSrc}
+        src={videoSrc}
         poster={video.poster}
         playsInline
         webkit-playsinline="true"
-        preload={isIOS ? "auto" : "metadata"}
+        x-webkit-airplay="allow"
+        preload="auto"
         controls={true}
         disablePictureInPicture
         crossOrigin="anonymous"
+        muted={isMuted}
         className="w-full h-full object-cover cursor-pointer"
         loop={false}
         onClick={handleVideoClick}
         onLoadedMetadata={() => {
           const v = videoRef.current;
-          console.log('[iOS Video] onLoadedMetadata', { 
+          console.log('[Video Player] onLoadedMetadata', { 
             videoId: video.id,
-            url: videoSrc, 
             readyState: v?.readyState,
             networkState: v?.networkState,
-            hasUserInteracted 
+            hasUserInteracted,
+            isIOS
           });
         }}
-        onLoadedData={(e) => {
+        onLoadedData={() => {
           const v = videoRef.current;
-          console.log('[iOS Video] onLoadedData', { 
+          console.log('[Video Player] onLoadedData', { 
             videoId: video.id,
-            url: videoSrc, 
             readyState: v?.readyState,
             networkState: v?.networkState,
-            hasUserInteracted 
+            hasUserInteracted,
+            isIOS
           });
         }}
         onCanPlay={() => {
           const v = videoRef.current;
-          console.log('[iOS Video] onCanPlay', { 
+          console.log('[Video Player] onCanPlay', { 
             videoId: video.id,
             readyState: v?.readyState,
-            networkState: v?.networkState 
+            networkState: v?.networkState,
+            isIOS
           });
         }}
         onError={(e: any) => {
           const v = videoRef.current;
-          console.error('[iOS Video] onError', { 
+          console.error('[Video Player] onError', { 
             videoId: video.id,
             error: e?.message, 
             code: v?.error?.code,
             networkState: v?.networkState, 
-            readyState: v?.readyState, 
-            src: isIOS && !hasUserInteracted ? undefined : videoSrc 
+            readyState: v?.readyState,
+            src: videoSrc,
+            isIOS
           });
         }}
-        onTouchStart={async (e) => {
-          // iOS requires user interaction for audio and src assignment
-          if (isIOS && !hasUserInteracted && videoRef.current) {
-            setHasUserInteracted(true);
-            const v = videoRef.current;
-            try {
-              // Set src only after user interaction to avoid iOS blocking
-              if (!v.src) {
-                v.src = videoSrc;
-                v.load();
-                // Wait a bit for video to start loading
-                await new Promise(resolve => setTimeout(resolve, 100));
-              }
-              // Force unmute on iOS touch
-              v.muted = false;
-              v.volume = 1;
+        onPlay={() => {
+          setIsPlaying(true);
+          // Ensure audio is enabled when video plays
+          const v = videoRef.current;
+          if (v && hasUserInteracted) {
+            // Unmute on all platforms after user interaction
+            // Use setIsMuted to update state, which will update the muted prop
+            setIsMuted(false);
+            v.volume = 1;
+            // Enable audio on iOS
+            if (isIOS) {
               enableAudioForVideo(v);
-              // Wait for video to have enough data before playing
-              const waitForReady = (video: HTMLVideoElement, timeoutMs = 2000) => {
-                return new Promise<void>((resolve) => {
-                  if (video.readyState >= 3) return resolve();
-                  let done = false;
-                  const onReady = () => {
-                    if (!done && video.readyState >= 3) {
-                      done = true;
-                      cleanup();
-                      resolve();
-                    }
-                  };
-                  const cleanup = () => {
-                    video.removeEventListener('canplay', onReady);
-                    video.removeEventListener('canplaythrough', onReady);
-                    video.removeEventListener('loadeddata', onReady);
-                  };
-                  video.addEventListener('canplay', onReady);
-                  video.addEventListener('canplaythrough', onReady);
-                  video.addEventListener('loadeddata', onReady);
-                  setTimeout(() => {
-                    if (!done) {
-                      cleanup();
-                      resolve(); // Resolve even if not ready
-                    }
-                  }, timeoutMs);
-                });
-              };
-              await waitForReady(v, 2000);
-              // Try immediate play
-              const playPromise = v.play();
-              if (playPromise && typeof playPromise.then === 'function') {
-                playPromise.then(() => {
-                  setIsPlaying(true);
-                  console.log('[iOS Video] Play succeeded on touchstart');
-                }).catch((err) => {
-                  // If play fails, show controls; user can tap play again
-                  console.log('[iOS Video] Play failed on touchstart, will retry on play button:', err);
-                });
-              }
-            } catch (err) {
-              console.warn('[iOS Video] Error on touchstart:', err);
             }
           }
         }}
-        onPlay={() => setIsPlaying(true)}
+        onTouchStart={(e) => {
+          // iOS and Android require user interaction for audio
+          if (!hasUserInteracted && videoRef.current) {
+            const v = videoRef.current;
+            try {
+              // Mark user interaction
+              setHasUserInteracted(true);
+              
+              // Force unmute on touch (iOS and Android)
+              // Use setIsMuted to update state, which will update the muted prop
+              setIsMuted(false);
+              v.volume = 1;
+              
+              // Enable audio on iOS
+              if (isIOS) {
+                enableAudioForVideo(v);
+              }
+              
+              console.log('[Video Player] Audio enabled on touchstart', { isIOS });
+            } catch (err) {
+              console.warn('[Video Player] Error on touchstart:', err);
+            }
+          }
+        }}
         onPause={() => setIsPlaying(false)}
-      />
+      >
+        {/* Explicit source tags for better MIME type handling */}
+        {/\.m3u8($|\?)/i.test(videoSrc) ? (
+          <source src={videoSrc} type="application/vnd.apple.mpegurl" />
+        ) : (
+          <source src={videoSrc} type="video/mp4" />
+        )}
+      </video>
 
       {/* Cache Status Badge */}
       {isFromCache && (
