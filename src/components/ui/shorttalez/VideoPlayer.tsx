@@ -121,6 +121,12 @@ export default function VideoPlayer({
     if (v && !isEnablingAudioRef.current) {
       // Only sync if we're not in the middle of enabling audio (to avoid race conditions)
       v.muted = isMuted;
+      v.defaultMuted = isMuted;
+      if (isMuted) {
+        if (!v.hasAttribute('muted')) v.setAttribute('muted', '');
+      } else {
+        v.removeAttribute('muted');
+      }
       v.volume = 1.0;
     }
   }, [isMuted]);
@@ -256,6 +262,12 @@ export default function VideoPlayer({
           });
         }
         
+        // On iOS, wait a bit for AudioContext to be ready before playing
+        if (isIOS && !hasUserInteracted) {
+          // Give AudioContext time to resume
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
         await v.play();
         setIsPlaying(true);
       } catch (err: any) {
@@ -275,12 +287,24 @@ export default function VideoPlayer({
 
     // Toggle mute state - use setIsMuted to update state, which will update the muted prop
     const newMuted = !isMuted;
+    
+    // Mark that we're enabling audio to prevent useEffect from overriding
+    if (!newMuted) {
+      isEnablingAudioRef.current = true;
+    }
+    
     setIsMuted(newMuted);
     
     // If unmuting, ensure audio is enabled (works for both iOS and Android)
     if (!newMuted) {
       v.volume = 1;
       enableAudioForVideo(v);
+      
+      // Reset the flag after a short delay to allow async operations to complete
+      setTimeout(() => {
+        isEnablingAudioRef.current = false;
+      }, 100);
+      
       console.log('[Video Player] Audio enabled on unmute', { isIOS });
     }
   }, [isMobile, triggerHaptic, isMuted, isIOS, enableAudioForVideo]);

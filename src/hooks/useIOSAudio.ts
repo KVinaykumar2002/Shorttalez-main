@@ -86,11 +86,15 @@ export const useIOSAudio = () => {
             // Use requestAnimationFrame to ensure DOM is ready
             requestAnimationFrame(() => {
               videoElement.muted = false;
+              videoElement.defaultMuted = false;
+              videoElement.removeAttribute('muted');
               // Double-check after a microtask to ensure it stuck
               Promise.resolve().then(() => {
                 if (videoElement.muted) {
                   console.warn('[iOS Audio] Video still muted after unmute attempt, retrying...');
                   videoElement.muted = false;
+                  videoElement.defaultMuted = false;
+                  videoElement.removeAttribute('muted');
                 }
                 console.log('[iOS Audio] Video unmuted after AudioContext resume', {
                   videoMuted: videoElement.muted,
@@ -102,10 +106,14 @@ export const useIOSAudio = () => {
             console.warn('[iOS Audio] Failed to resume audio context:', err);
             // Even if resume fails, try to unmute (might work in some cases)
             videoElement.muted = false;
+            videoElement.defaultMuted = false;
+            videoElement.removeAttribute('muted');
           });
         } else {
           // AudioContext is already running, unmute immediately
           videoElement.muted = false;
+          videoElement.defaultMuted = false;
+          videoElement.removeAttribute('muted');
           console.log('[iOS Audio] AudioContext already running, video unmuted', {
             videoMuted: videoElement.muted,
             audioContextState: audioContext.state
@@ -115,6 +123,8 @@ export const useIOSAudio = () => {
         // No AudioContext yet, but still ensure video is unmuted
         // The AudioContext will be created on next interaction
         videoElement.muted = false;
+        videoElement.defaultMuted = false;
+        videoElement.removeAttribute('muted');
         console.log('[iOS Audio] No AudioContext yet, video unmuted', {
           videoMuted: videoElement.muted
         });
@@ -124,6 +134,8 @@ export const useIOSAudio = () => {
     } else {
       // For non-iOS (Android, Desktop), just ensure audio is enabled
       videoElement.muted = false;
+      videoElement.defaultMuted = false;
+      videoElement.removeAttribute('muted');
       console.log('[Audio] Audio enabled for video (non-iOS)', { 
         videoMuted: videoElement.muted,
         videoVolume: videoElement.volume
