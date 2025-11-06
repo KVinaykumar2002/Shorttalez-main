@@ -436,9 +436,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         startViewTracking();
         setHasInteracted(true); // Mark user interaction
         
-        // Enable audio on iOS on first interaction
-        if (isIOS && !hasInteracted) {
+        // Enable audio on iOS on first interaction - ALWAYS unmute on user interaction
+        if (isIOS) {
           if (videoRef.current) {
+            // Force unmute on iOS for user interaction
+            videoRef.current.muted = false;
+            videoRef.current.volume = 1;
             enableAudioForVideo(videoRef.current);
           }
           if (youtubePlayerRef.current) {
@@ -474,12 +477,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         if (newPlaying) {
           setIsLoading(true);
           
-          // Ensure audio is enabled on iOS on user interaction
-          if (isIOS && hasInteracted) {
-            videoRef.current.muted = muted;
-            videoRef.current.volume = muted ? 0 : 1;
+          // Ensure audio is enabled on iOS on user interaction - FORCE UNMUTE
+          if (isIOS) {
+            // Always unmute on iOS when user interacts, regardless of muted prop
+            videoRef.current.muted = false;
+            videoRef.current.volume = 1;
             // Enable audio session
             enableAudioForVideo(videoRef.current);
+          } else {
+            // For non-iOS, respect the muted prop
+            videoRef.current.muted = muted;
+            videoRef.current.volume = muted ? 0 : 1;
           }
           
           try {
@@ -567,9 +575,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       if (playing) {
         setIsLoading(true);
         startViewTracking(); // Start tracking when playing
-        // Enable audio on iOS if user has interacted
+        // Enable audio on iOS if user has interacted - FORCE UNMUTE
         if (isIOS && hasInteracted) {
+          video.muted = false;
+          video.volume = 1;
           enableAudioForVideo(video);
+        } else if (!isIOS) {
+          // For non-iOS, respect the muted prop
+          video.muted = muted;
+          video.volume = muted ? 0 : 1;
         }
         const playPromise = video.play();
         if (playPromise !== undefined) {
@@ -829,7 +843,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           className="w-full h-full object-cover bg-black"
           src={isIOS && !hasInteracted ? undefined : proxiedUrl}
           poster={thumbnailUrl || undefined}
-          muted={muted}
+          muted={isIOS && !hasInteracted ? true : muted}
           autoPlay={autoPlay}
           controls={true}
           onEnded={onEnded}
@@ -838,8 +852,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             // iOS requires user interaction for audio
             if (isIOS && !hasInteracted && videoRef.current) {
               setHasInteracted(true);
-              try { (videoRef.current as HTMLVideoElement).src = proxiedUrl; (videoRef.current as HTMLVideoElement).load(); } catch {}
-              enableAudioForVideo(videoRef.current);
+              const v = videoRef.current as HTMLVideoElement;
+              try { 
+                if (!v.src) { v.src = proxiedUrl; v.load(); }
+                // Force unmute on iOS touch
+                v.muted = false;
+                v.volume = 1;
+                enableAudioForVideo(v);
+              } catch {}
             }
           }}
           preload={isIOS ? 'auto' : preload}
@@ -852,6 +872,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             setInternalPlaying(true);
             onPlayStateChange?.(true);
             setIsLoading(false);
+            // Ensure audio is enabled on iOS when video plays
+            if (isIOS && videoRef.current) {
+              videoRef.current.muted = false;
+              videoRef.current.volume = 1;
+              enableAudioForVideo(videoRef.current);
+            }
           }}
           onPause={() => {
             setInternalPlaying(false);
@@ -948,7 +974,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           className="w-full h-full object-cover bg-black"
           src={isIOS && !hasInteracted ? undefined : videoUrl}
           poster={thumbnailUrl || undefined}
-          muted={muted}
+          muted={isIOS && !hasInteracted ? true : muted}
           autoPlay={autoPlay}
           controls={true}
           onEnded={onEnded}
@@ -957,8 +983,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             // iOS requires user interaction for audio
             if (isIOS && !hasInteracted && videoRef.current) {
               setHasInteracted(true);
-              try { (videoRef.current as HTMLVideoElement).src = videoUrl; (videoRef.current as HTMLVideoElement).load(); } catch {}
-              enableAudioForVideo(videoRef.current);
+              const v = videoRef.current as HTMLVideoElement;
+              try { 
+                if (!v.src) { v.src = videoUrl; v.load(); }
+                // Force unmute on iOS touch
+                v.muted = false;
+                v.volume = 1;
+                enableAudioForVideo(v);
+              } catch {}
             }
           }}
           preload={isIOS ? 'auto' : preload}
@@ -971,6 +1003,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             setInternalPlaying(true);
             onPlayStateChange?.(true);
             setIsLoading(false);
+            // Ensure audio is enabled on iOS when video plays
+            if (isIOS && videoRef.current) {
+              videoRef.current.muted = false;
+              videoRef.current.volume = 1;
+              enableAudioForVideo(videoRef.current);
+            }
           }}
           onPause={() => {
             setInternalPlaying(false);

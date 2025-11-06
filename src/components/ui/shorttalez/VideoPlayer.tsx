@@ -182,15 +182,24 @@ export default function VideoPlayer({
       await triggerHaptic(ImpactStyle.Light);
     }
 
-    // On first interaction, enable audio for iOS (iOS requirement)
+    // On first interaction, enable audio for iOS (iOS requirement) - ALWAYS force unmute
     if (!hasUserInteracted) {
-      if (isIOS) {
-        enableAudioForVideo(v);
-      }
-      v.muted = false;
-      setIsMuted(false);
       setHasUserInteracted(true);
+      if (isIOS) {
+        // Force unmute on iOS for user interaction
+        v.muted = false;
+        v.volume = 1;
+        enableAudioForVideo(v);
+      } else {
+        v.muted = false;
+      }
+      setIsMuted(false);
       console.log('[iOS Audio] Enabled audio on first user interaction');
+    } else if (isIOS) {
+      // Ensure audio stays enabled on iOS
+      v.muted = false;
+      v.volume = 1;
+      enableAudioForVideo(v);
     }
 
     if (isPlaying) {
@@ -263,7 +272,11 @@ export default function VideoPlayer({
           // iOS requires user interaction for audio
           if (isIOS && !hasUserInteracted && videoRef.current) {
             setHasUserInteracted(true);
-            enableAudioForVideo(videoRef.current);
+            const v = videoRef.current;
+            // Force unmute on iOS touch
+            v.muted = false;
+            v.volume = 1;
+            enableAudioForVideo(v);
           }
         }}
         onPlay={() => setIsPlaying(true)}
