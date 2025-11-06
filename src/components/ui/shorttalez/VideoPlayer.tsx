@@ -203,19 +203,16 @@ export default function VideoPlayer({
       setIsMuted(false);
       v.volume = 1;
       
-      // Enable audio on iOS
-      if (isIOS) {
-        enableAudioForVideo(v);
-      }
+      // Enable audio - works for both iOS and Android
+      enableAudioForVideo(v);
       
       console.log('[Video Player] Audio enabled on first user interaction', { isIOS });
     } else {
       // Ensure audio stays enabled on all platforms
       setIsMuted(false);
       v.volume = 1;
-      if (isIOS) {
-        enableAudioForVideo(v);
-      }
+      // Enable audio - works for both iOS and Android
+      enableAudioForVideo(v);
     }
 
     if (isPlaying) {
@@ -264,9 +261,11 @@ export default function VideoPlayer({
     const newMuted = !isMuted;
     setIsMuted(newMuted);
     
-    // If unmuting on iOS, ensure audio is enabled
-    if (!newMuted && isIOS) {
+    // If unmuting, ensure audio is enabled (works for both iOS and Android)
+    if (!newMuted) {
+      v.volume = 1;
       enableAudioForVideo(v);
+      console.log('[Video Player] Audio enabled on unmute', { isIOS });
     }
   }, [isMobile, triggerHaptic, isMuted, isIOS, enableAudioForVideo]);
 
@@ -352,10 +351,14 @@ export default function VideoPlayer({
             // Use setIsMuted to update state, which will update the muted prop
             setIsMuted(false);
             v.volume = 1;
-            // Enable audio on iOS
-            if (isIOS) {
-              enableAudioForVideo(v);
-            }
+            // Enable audio - works for both iOS and Android
+            enableAudioForVideo(v);
+            console.log('[Video Player] Audio ensured on play', { 
+              isIOS, 
+              muted: v.muted, 
+              volume: v.volume,
+              hasUserInteracted 
+            });
           }
         }}
         onTouchStart={(e) => {
@@ -371,10 +374,8 @@ export default function VideoPlayer({
               setIsMuted(false);
               v.volume = 1;
               
-              // Enable audio on iOS
-              if (isIOS) {
-                enableAudioForVideo(v);
-              }
+              // Enable audio - works for both iOS and Android
+              enableAudioForVideo(v);
               
               console.log('[Video Player] Audio enabled on touchstart', { isIOS });
             } catch (err) {

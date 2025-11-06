@@ -64,28 +64,70 @@ export const useIOSAudio = () => {
 
   // Enable audio for video element (must be called from user interaction)
   const enableAudioForVideo = useCallback((videoElement: HTMLVideoElement) => {
-    if (isIOS && videoElement) {
+    if (!videoElement) return;
+    
+    // Set playsInline and webkit-playsinline attributes for iOS
+    videoElement.setAttribute('playsinline', 'true');
+    videoElement.setAttribute('webkit-playsinline', 'true');
+    
+    // Ensure volume is set to 1 (all platforms)
+    videoElement.volume = 1;
+    
+    if (isIOS) {
       initAudioContext();
       
-      // Must set muted to false synchronously in user gesture
-      videoElement.muted = false;
-      videoElement.volume = 1;
-      
-      // Set playsInline and webkit-playsinline attributes for iOS
-      videoElement.setAttribute('playsinline', 'true');
-      videoElement.setAttribute('webkit-playsinline', 'true');
-      
-      // Resume audio context if suspended
-      if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume().catch((err) => {
-          console.warn('Failed to resume audio context:', err);
+      // Resume audio context if suspended - CRITICAL for iOS audio
+      if (audioContext) {
+        if (audioContext.state === 'suspended') {
+          // For iOS, we MUST resume AudioContext before unmuting
+          audioContext.resume().then(() => {
+            console.log('[iOS Audio] AudioContext resumed successfully');
+            // After resuming, ensure video audio is enabled
+            // Use requestAnimationFrame to ensure DOM is ready
+            requestAnimationFrame(() => {
+              videoElement.muted = false;
+              // Double-check after a microtask to ensure it stuck
+              Promise.resolve().then(() => {
+                if (videoElement.muted) {
+                  console.warn('[iOS Audio] Video still muted after unmute attempt, retrying...');
+                  videoElement.muted = false;
+                }
+                console.log('[iOS Audio] Video unmuted after AudioContext resume', {
+                  videoMuted: videoElement.muted,
+                  audioContextState: audioContext.state
+                });
+              });
+            });
+          }).catch((err) => {
+            console.warn('[iOS Audio] Failed to resume audio context:', err);
+            // Even if resume fails, try to unmute (might work in some cases)
+            videoElement.muted = false;
+          });
+        } else {
+          // AudioContext is already running, unmute immediately
+          videoElement.muted = false;
+          console.log('[iOS Audio] AudioContext already running, video unmuted', {
+            videoMuted: videoElement.muted,
+            audioContextState: audioContext.state
+          });
+        }
+      } else {
+        // No AudioContext yet, but still ensure video is unmuted
+        // The AudioContext will be created on next interaction
+        videoElement.muted = false;
+        console.log('[iOS Audio] No AudioContext yet, video unmuted', {
+          videoMuted: videoElement.muted
         });
       }
       
-      // Don't auto-play here - let the play button handle playback
-      // This ensures user has control and avoids conflicts
-      
       setAudioEnabled(true);
+    } else {
+      // For non-iOS (Android, Desktop), just ensure audio is enabled
+      videoElement.muted = false;
+      console.log('[Audio] Audio enabled for video (non-iOS)', { 
+        videoMuted: videoElement.muted,
+        videoVolume: videoElement.volume
+      });
     }
   }, [isIOS, initAudioContext, audioContext]);
 
