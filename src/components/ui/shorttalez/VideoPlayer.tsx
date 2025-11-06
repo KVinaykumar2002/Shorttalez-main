@@ -93,13 +93,14 @@ export default function VideoPlayer({
       isIOS
     });
     
-    // Always call load() - iOS won't block it if we're not auto-playing
-    // The key is that we don't call play() until user interaction
     try { 
       v.preload = 'auto';
-      v.load();
+      // IMPORTANT: do not call load() on iOS until user interaction to avoid stall
+      if (!isIOS) {
+        v.load();
+      }
     } catch (err) {
-      console.warn('[Video Player] Error calling load():', err);
+      console.warn('[Video Player] Error setting preload/load():', err);
     }
 
     // Don't autoplay - wait for user interaction (iOS and Android autoplay policies)
@@ -210,6 +211,13 @@ export default function VideoPlayer({
       
       // Mark that we're enabling audio to prevent useEffect from overriding
       isEnablingAudioRef.current = true;
+      
+      // For iOS, ensure we start loading only after the gesture
+      if (isIOS && (v.readyState === 0 || v.networkState === 0)) {
+        try {
+          v.load();
+        } catch {}
+      }
       
       // Force unmute on first user interaction (all platforms)
       // Use setIsMuted to update state, which will update the muted prop
@@ -350,6 +358,17 @@ export default function VideoPlayer({
             hasUserInteracted,
             isIOS
           });
+          // Stall watchdog: if not enough data within 1500ms, reload to break Safari stall
+          if (v) {
+            const startReady = v.readyState;
+            setTimeout(() => {
+              if (!v) return;
+              if (v.readyState < 3) {
+                console.warn('[Video Player] Stall detected after metadata, reloading()', { startReady, currentReady: v.readyState });
+                try { v.load(); } catch {}
+              }
+            }, 1500);
+          }
         }}
         onLoadedData={() => {
           const v = videoRef.current;
