@@ -113,9 +113,13 @@ export default function VideoPlayer({
   }, [video.id, isIOS]);
 
   // Sync muted state with video element (important for iOS timing)
+  // Use a ref to track if we're in the middle of an async audio enable operation
+  const isEnablingAudioRef = useRef(false);
+  
   useEffect(() => {
     const v = videoRef.current;
-    if (v) {
+    if (v && !isEnablingAudioRef.current) {
+      // Only sync if we're not in the middle of enabling audio (to avoid race conditions)
       v.muted = isMuted;
       v.volume = 1.0;
     }
@@ -198,6 +202,9 @@ export default function VideoPlayer({
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
       
+      // Mark that we're enabling audio to prevent useEffect from overriding
+      isEnablingAudioRef.current = true;
+      
       // Force unmute on first user interaction (all platforms)
       // Use setIsMuted to update state, which will update the muted prop
       setIsMuted(false);
@@ -206,13 +213,22 @@ export default function VideoPlayer({
       // Enable audio - works for both iOS and Android
       enableAudioForVideo(v);
       
+      // Reset the flag after a short delay to allow async operations to complete
+      setTimeout(() => {
+        isEnablingAudioRef.current = false;
+      }, 100);
+      
       console.log('[Video Player] Audio enabled on first user interaction', { isIOS });
     } else {
       // Ensure audio stays enabled on all platforms
+      isEnablingAudioRef.current = true;
       setIsMuted(false);
       v.volume = 1;
       // Enable audio - works for both iOS and Android
       enableAudioForVideo(v);
+      setTimeout(() => {
+        isEnablingAudioRef.current = false;
+      }, 100);
     }
 
     if (isPlaying) {
@@ -347,12 +363,21 @@ export default function VideoPlayer({
           // Ensure audio is enabled when video plays
           const v = videoRef.current;
           if (v && hasUserInteracted) {
+            // Mark that we're enabling audio to prevent useEffect from overriding
+            isEnablingAudioRef.current = true;
+            
             // Unmute on all platforms after user interaction
             // Use setIsMuted to update state, which will update the muted prop
             setIsMuted(false);
             v.volume = 1;
             // Enable audio - works for both iOS and Android
             enableAudioForVideo(v);
+            
+            // Reset the flag after a short delay to allow async operations to complete
+            setTimeout(() => {
+              isEnablingAudioRef.current = false;
+            }, 100);
+            
             console.log('[Video Player] Audio ensured on play', { 
               isIOS, 
               muted: v.muted, 
@@ -369,6 +394,9 @@ export default function VideoPlayer({
               // Mark user interaction
               setHasUserInteracted(true);
               
+              // Mark that we're enabling audio to prevent useEffect from overriding
+              isEnablingAudioRef.current = true;
+              
               // Force unmute on touch (iOS and Android)
               // Use setIsMuted to update state, which will update the muted prop
               setIsMuted(false);
@@ -377,9 +405,15 @@ export default function VideoPlayer({
               // Enable audio - works for both iOS and Android
               enableAudioForVideo(v);
               
+              // Reset the flag after a short delay to allow async operations to complete
+              setTimeout(() => {
+                isEnablingAudioRef.current = false;
+              }, 100);
+              
               console.log('[Video Player] Audio enabled on touchstart', { isIOS });
             } catch (err) {
               console.warn('[Video Player] Error on touchstart:', err);
+              isEnablingAudioRef.current = false;
             }
           }
         }}
@@ -392,6 +426,21 @@ export default function VideoPlayer({
           <source src={videoSrc} type="video/mp4" />
         )}
       </video>
+
+      {isMuted && (
+        <button
+          type="button"
+          aria-label="Unmute"
+          className="absolute bottom-6 left-6 z-40 px-3 py-2 rounded-full bg-white/90 text-black flex items-center gap-2 shadow-lg touch-manipulation"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleMute();
+          }}
+        >
+          <VolumeX size={16} />
+          <span className="text-sm font-medium">Tap for sound</span>
+        </button>
+      )}
 
       {/* Cache Status Badge */}
       {isFromCache && (
