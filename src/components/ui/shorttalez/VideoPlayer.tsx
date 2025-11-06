@@ -72,6 +72,9 @@ export default function VideoPlayer({
     const v = videoRef.current;
     if (!v) return;
     
+    // Reset interaction state when video changes
+    setHasUserInteracted(false);
+    
     // On iOS, don't force mute - wait for user interaction
     // On other platforms, start muted for autoplay policy compliance
     if (!isIOS) {
@@ -81,16 +84,24 @@ export default function VideoPlayer({
     
     // Log audio capabilities for debugging
     console.log('[iOS Audio Debug]', {
+      videoId: video.id,
       muted: v.muted,
       volume: v.volume,
       paused: v.paused,
       readyState: v.readyState,
-      src: v.src.substring(0, 50),
+      src: v.src ? v.src.substring(0, 50) : 'undefined',
+      hasUserInteracted,
       isIOS
     });
     
     // Force eager buffering for reels-like experience
-    try { v.preload = 'auto'; v.load(); } catch {}
+    // On iOS, only call load() after user interaction to avoid blocking
+    try { 
+      v.preload = 'auto';
+      if (!isIOS || hasUserInteracted) {
+        v.load();
+      }
+    } catch {}
 
     // Avoid autoplay attempt on iOS to prevent policy block; wait for tap
     if (!isIOS) {
@@ -108,6 +119,21 @@ export default function VideoPlayer({
     
     return () => clearTimeout(hideTimer);
   }, [video.id, isIOS]);
+
+  // When user interacts on iOS, call load() if not already called
+  useEffect(() => {
+    if (isIOS && hasUserInteracted) {
+      const v = videoRef.current;
+      if (v && v.src && v.readyState === 0) {
+        try {
+          v.load();
+          console.log('[iOS Video] load() called after user interaction');
+        } catch (err) {
+          console.warn('[iOS Video] Error calling load() after interaction:', err);
+        }
+      }
+    }
+  }, [hasUserInteracted, isIOS]);
 
   // Update progress
   useEffect(() => {
@@ -174,6 +200,35 @@ export default function VideoPlayer({
     setTimeout(() => setShowLikeAnimation(false), 1000);
   }, [video.id, onToggleLike]);
 
+  // Wait until video has enough data to play (readyState >= 3) or timeout
+  const waitForReady = useCallback((video: HTMLVideoElement, timeoutMs = 2000) => {
+    return new Promise<void>((resolve) => {
+      if (video.readyState >= 3) return resolve();
+      let done = false;
+      const onReady = () => {
+        if (!done && video.readyState >= 3) {
+          done = true;
+          cleanup();
+          resolve();
+        }
+      };
+      const cleanup = () => {
+        video.removeEventListener('canplay', onReady);
+        video.removeEventListener('canplaythrough', onReady);
+        video.removeEventListener('loadeddata', onReady);
+      };
+      video.addEventListener('canplay', onReady);
+      video.addEventListener('canplaythrough', onReady);
+      video.addEventListener('loadeddata', onReady);
+      setTimeout(() => {
+        if (!done) {
+          cleanup();
+          resolve(); // Resolve even if not ready
+        }
+      }, timeoutMs);
+    });
+  }, []);
+
   const togglePlayPause = useCallback(async () => {
     const v = videoRef.current;
     if (!v) return;
@@ -186,6 +241,13 @@ export default function VideoPlayer({
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
       if (isIOS) {
+        // Set src only after user interaction to avoid iOS blocking
+        if (!v.src) {
+          v.src = videoSrc;
+          v.load();
+          // Wait for video to have enough data before playing
+          await waitForReady(v, 2000);
+        }
         // Force unmute on iOS for user interaction
         v.muted = false;
         v.volume = 1;
@@ -207,6 +269,10 @@ export default function VideoPlayer({
       setIsPlaying(false);
     } else {
       try {
+        // Ensure video has enough data before playing
+        if (v.readyState < 3) {
+          await waitForReady(v, 2000);
+        }
         await v.play();
         setIsPlaying(true);
       } catch (err) {
@@ -217,7 +283,7 @@ export default function VideoPlayer({
         }
       }
     }
-  }, [isPlaying, isMobile, triggerHaptic, hasUserInteracted, isIOS, enableAudioForVideo]);
+  }, [isPlaying, isMobile, triggerHaptic, hasUserInteracted, isIOS, enableAudioForVideo, videoSrc, waitForReady]);
 
   const toggleMute = useCallback(async () => {
     const v = videoRef.current;
@@ -250,7 +316,7 @@ export default function VideoPlayer({
       
       <video
         ref={videoRef}
-        src={videoSrc}
+        src={isIOS && !hasUserInteracted ? undefined : videoSrc}
         poster={video.poster}
         playsInline
         webkit-playsinline="true"
@@ -261,22 +327,105 @@ export default function VideoPlayer({
         className="w-full h-full object-cover cursor-pointer"
         loop={false}
         onClick={handleVideoClick}
+        onLoadedMetadata={() => {
+          const v = videoRef.current;
+          console.log('[iOS Video] onLoadedMetadata', { 
+            videoId: video.id,
+            url: videoSrc, 
+            readyState: v?.readyState,
+            networkState: v?.networkState,
+            hasUserInteracted 
+          });
+        }}
         onLoadedData={(e) => {
-          console.log('[iOS Video] onLoadedData', { url: videoSrc, readyState: (e.target as HTMLVideoElement)?.readyState });
+          const v = videoRef.current;
+          console.log('[iOS Video] onLoadedData', { 
+            videoId: video.id,
+            url: videoSrc, 
+            readyState: v?.readyState,
+            networkState: v?.networkState,
+            hasUserInteracted 
+          });
+        }}
+        onCanPlay={() => {
+          const v = videoRef.current;
+          console.log('[iOS Video] onCanPlay', { 
+            videoId: video.id,
+            readyState: v?.readyState,
+            networkState: v?.networkState 
+          });
         }}
         onError={(e: any) => {
           const v = videoRef.current;
-          console.error('[iOS Video] onError', { error: e?.message, networkState: v?.networkState, readyState: v?.readyState, src: videoSrc });
+          console.error('[iOS Video] onError', { 
+            videoId: video.id,
+            error: e?.message, 
+            code: v?.error?.code,
+            networkState: v?.networkState, 
+            readyState: v?.readyState, 
+            src: isIOS && !hasUserInteracted ? undefined : videoSrc 
+          });
         }}
-        onTouchStart={(e) => {
-          // iOS requires user interaction for audio
+        onTouchStart={async (e) => {
+          // iOS requires user interaction for audio and src assignment
           if (isIOS && !hasUserInteracted && videoRef.current) {
             setHasUserInteracted(true);
             const v = videoRef.current;
-            // Force unmute on iOS touch
-            v.muted = false;
-            v.volume = 1;
-            enableAudioForVideo(v);
+            try {
+              // Set src only after user interaction to avoid iOS blocking
+              if (!v.src) {
+                v.src = videoSrc;
+                v.load();
+                // Wait a bit for video to start loading
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
+              // Force unmute on iOS touch
+              v.muted = false;
+              v.volume = 1;
+              enableAudioForVideo(v);
+              // Wait for video to have enough data before playing
+              const waitForReady = (video: HTMLVideoElement, timeoutMs = 2000) => {
+                return new Promise<void>((resolve) => {
+                  if (video.readyState >= 3) return resolve();
+                  let done = false;
+                  const onReady = () => {
+                    if (!done && video.readyState >= 3) {
+                      done = true;
+                      cleanup();
+                      resolve();
+                    }
+                  };
+                  const cleanup = () => {
+                    video.removeEventListener('canplay', onReady);
+                    video.removeEventListener('canplaythrough', onReady);
+                    video.removeEventListener('loadeddata', onReady);
+                  };
+                  video.addEventListener('canplay', onReady);
+                  video.addEventListener('canplaythrough', onReady);
+                  video.addEventListener('loadeddata', onReady);
+                  setTimeout(() => {
+                    if (!done) {
+                      cleanup();
+                      resolve(); // Resolve even if not ready
+                    }
+                  }, timeoutMs);
+                });
+              };
+              await waitForReady(v, 2000);
+              // Try immediate play
+              const playPromise = v.play();
+              if (playPromise && typeof playPromise.then === 'function') {
+                playPromise.then(() => {
+                  setIsPlaying(true);
+                  console.log('[iOS Video] Play succeeded on touchstart');
+                }).catch((err) => {
+                  // If play fails, show controls; user can tap play again
+                  console.log('[iOS Video] Play failed on touchstart, will retry on play button:', err);
+                });
+              }
+            } catch (err) {
+              console.warn('[iOS Video] Error on touchstart:', err);
+            }
           }
         }}
         onPlay={() => setIsPlaying(true)}

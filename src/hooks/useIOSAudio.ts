@@ -9,12 +9,25 @@ export const useIOSAudio = () => {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
-  // Detect iOS
+  // Detect iOS and initialize AudioContext early (not wait for user interaction)
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     setIsIOS(iOS);
-  }, []);
+    
+    // Initialize AudioContext early on mount for first video
+    // This ensures AudioContext is ready before user interaction
+    if (iOS && !audioContext) {
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(ctx);
+        setAudioEnabled(true);
+        console.log('[iOS Audio] AudioContext initialized early:', ctx.state);
+      } catch (err) {
+        console.warn('[iOS Audio] Failed to initialize AudioContext early:', err);
+      }
+    }
+  }, [audioContext]);
 
   // Initialize audio context on first user interaction
   const initAudioContext = useCallback(() => {
