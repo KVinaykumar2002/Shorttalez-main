@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, Volume2, VolumeX, Loader2, AlertCircle } from 'lucide-react';
 import { useViewTracking } from '@/hooks/useViewTracking';
@@ -66,6 +66,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const { isIOS, audioEnabled, enableAudioForVideo, unmuteYouTubePlayer } = useIOSAudio();
   const [internalMuted, setInternalMuted] = useState<boolean>(false); // Start unmuted - audio enabled on first interaction
+  const [viewportSize, setViewportSize] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  }));
 
   const playing = isPlaying !== undefined ? isPlaying : internalPlaying;
   const muted = isMuted !== undefined ? isMuted : internalMuted;
@@ -75,6 +79,34 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     episodeId,
     onViewCounted: () => console.log('View counted for episode:', episodeId)
   });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
+
+  const iframeScale = useMemo(() => {
+    const { width, height } = viewportSize;
+    if (!width || !height) return 1;
+    const viewportAspect = height / width;
+    const horizontalVideoAspect = 9 / 16;
+    if (viewportAspect <= horizontalVideoAspect) {
+      return 1;
+    }
+    const scaleNeeded = viewportAspect / horizontalVideoAspect;
+    return Math.min(Math.max(scaleNeeded, 1), 3.2);
+  }, [viewportSize]);
 
   // Load YouTube API
   useEffect(() => {
@@ -686,7 +718,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Cloudflare Stream player
   if (isCloudflareStreamUrl(videoUrl)) {
     return (
-      <div className={`relative w-full h-full ${className}`} style={style} onClick={handleVideoClick}>
+      <div className={`relative w-full h-full overflow-hidden ${className}`} style={style} onClick={handleVideoClick}>
         {/* Thumbnail overlay for Cloudflare Stream */}
         {thumbnailUrl && !playing && (
           <div className="absolute inset-0 z-10">
@@ -706,7 +738,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <iframe
           ref={iframeRef}
           src={videoUrl}
-          className="w-full h-full object-cover"
+          className="absolute w-full h-full"
+          style={{
+            top: '50%',
+            left: '50%',
+            transform: `translate(-50%, -50%) scale(${iframeScale})`,
+            transformOrigin: 'center center',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'black',
+          }}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
@@ -756,10 +797,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (isYouTubeUrl(videoUrl)) {
       // For YouTube, use a div that will be replaced by the YouTube API
       return (
-        <div className={`relative w-full h-full ${className}`} style={style} onClick={handleVideoClick}>
+        <div className={`relative w-full h-full overflow-hidden ${className}`} style={style} onClick={handleVideoClick}>
           <div
             id={playerIdRef.current}
-            className="w-full h-full"
+            className="absolute w-full h-full"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) scale(${iframeScale})`,
+              transformOrigin: 'center center',
+              width: '100%',
+              height: '100%',
+            }}
           />
           
           {/* Custom controls overlay for YouTube videos */}
@@ -767,9 +816,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
               <Button
                 size="lg"
-                onClick={() => {
-                  setInternalPlaying(true);
-                  onPlayStateChange?.(true);
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  togglePlayPause();
                 }}
                 className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-background/20 hover:bg-background/30 backdrop-blur-sm pointer-events-auto touch-manipulation"
               >
@@ -788,7 +838,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     // For Vimeo and Google Drive, use iframe
     if (embedUrl) {
       return (
-        <div className={`relative w-full h-full ${className}`} style={style} onClick={handleVideoClick}>
+        <div className={`relative w-full h-full overflow-hidden ${className}`} style={style} onClick={handleVideoClick}>
           {/* Thumbnail overlay for embedded videos */}
           {thumbnailUrl && !playing && (
             <div className="absolute inset-0 z-10">
@@ -808,7 +858,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <iframe
             ref={iframeRef}
             src={embedUrl}
-            className="w-full h-full"
+            className="absolute w-full h-full"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) scale(${iframeScale})`,
+              transformOrigin: 'center center',
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'black',
+            }}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
@@ -1102,7 +1161,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Fallback: try to render as iframe for other URLs
   return (
-    <div className={`relative w-full h-full ${className}`} style={style} onClick={handleVideoClick}>
+    <div className={`relative w-full h-full overflow-hidden ${className}`} style={style} onClick={handleVideoClick}>
       {/* Thumbnail overlay for fallback iframe */}
       {thumbnailUrl && !playing && (
         <div className="absolute inset-0 z-10">
@@ -1122,7 +1181,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <iframe
         ref={iframeRef}
         src={videoUrl}
-        className="w-full h-full"
+        className="absolute w-full h-full"
+        style={{
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${iframeScale})`,
+          transformOrigin: 'center center',
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'black',
+        }}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen

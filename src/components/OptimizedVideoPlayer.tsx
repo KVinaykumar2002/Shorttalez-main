@@ -91,7 +91,7 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     const sanitizedNextUrl = useMemo(() => nextVideoUrl ? sanitizeVideoUrl(nextVideoUrl) : undefined, [nextVideoUrl]);
 
     const effectiveSmartFill = smartFill ?? isMobile;
-    const smartScale = smartFillIntensity ?? 1.08; // 8 % zoom
+    const defaultSmartScale = smartFillIntensity ?? 1.08; // 8 % baseline zoom
 
     /* ------------------------------------------------------------------ */
     /*  State                                                             */
@@ -107,6 +107,10 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [fullscreen, setFullscreen] = useState(false);
+    const [viewportSize, setViewportSize] = useState(() => ({
+      width: typeof window !== "undefined" ? window.innerWidth : 0,
+      height: typeof window !== "undefined" ? window.innerHeight : 0,
+    }));
 
     const playing = externalPlaying ?? internalPlaying;
     const muted = externalMuted ?? internalMuted;
@@ -135,6 +139,22 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     useEffect(() => {
       if (episodeId) startViewTracking();
     }, [episodeId, startViewTracking]);
+
+    useEffect(() => {
+      if (typeof window === "undefined") return;
+      const handleResize = () => {
+        setViewportSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      };
+      window.addEventListener("resize", handleResize, { passive: true });
+      window.addEventListener("orientationchange", handleResize);
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        window.removeEventListener("orientationchange", handleResize);
+      };
+    }, []);
 
     /* ------------------------------------------------------------------ */
     /*  Back-button → global player flag                                   */
@@ -180,6 +200,34 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
       if (/\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)$/i.test(u) || u.includes(".supabase.co/storage/")) return "direct";
       return "iframe";
     }, [sanitizedUrl]);
+
+    const isIframeBased = useMemo(
+      () =>
+        videoType === "youtube" ||
+        videoType === "vimeo" ||
+        videoType === "gdrive" ||
+        videoType === "cloudflare" ||
+        videoType === "iframe",
+      [videoType],
+    );
+
+    const computedSmartScale = useMemo(() => {
+      if (!effectiveSmartFill) return 1;
+      if (!isIframeBased) return Math.max(defaultSmartScale, 1);
+      const { width, height } = viewportSize;
+      if (!width || !height) return Math.max(defaultSmartScale, 1);
+
+      const viewportAspect = height / width;
+      const horizontalVideoAspect = 9 / 16; // 16:9 sources
+
+      if (viewportAspect <= horizontalVideoAspect) {
+        return Math.max(defaultSmartScale, 1);
+      }
+
+      const scaleNeeded = viewportAspect / horizontalVideoAspect;
+      const safeScale = Math.min(Math.max(scaleNeeded, defaultSmartScale, 1), 3.2);
+      return Number.isFinite(safeScale) ? safeScale : Math.max(defaultSmartScale, 1);
+    }, [defaultSmartScale, effectiveSmartFill, isIframeBased, viewportSize]);
     
     // Instant video loading for direct/pCloud videos
     const isDirectVideo = videoType === "direct" || videoType === "pcloud";
@@ -643,17 +691,26 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
     /* ------------------------------------------------------------------ */
     /*  Render helpers                                                     */
     /* ------------------------------------------------------------------ */
-    const renderYouTube = () => (
-      <div
-        className="absolute inset-0 overflow-hidden bg-black"
-        style={{
-          transform: effectiveSmartFill ? `scale(${smartScale})` : undefined,
-          transformOrigin: 'center center',
-        }}
-      >
-        <div id={playerIdRef.current} className="absolute inset-0 w-full h-full" />
-      </div>
-    );
+    const renderYouTube = () => {
+      const scaleValue = effectiveSmartFill ? computedSmartScale : 1;
+      return (
+        <div className="absolute inset-0 overflow-hidden bg-black">
+          <div
+            id={playerIdRef.current}
+            className="absolute w-full h-full"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: `translate(-50%, -50%) scale(${scaleValue})`,
+              transformOrigin: "center center",
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </div>
+      );
+    };
 
     const renderIframe = () => {
       const src = getEmbedUrl();
@@ -661,10 +718,16 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = memo(
         <iframe
           ref={iframeRef}
           src={src}
-          className={`absolute inset-0 w-full h-full ${videoClassName}`}
+          className={`absolute w-full h-full ${videoClassName}`}
           style={{
-            transform: effectiveSmartFill ? `scale(${smartScale})` : undefined,
-            transformOrigin: 'center center',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%, -50%) scale(${effectiveSmartFill ? computedSmartScale : 1})`,
+            transformOrigin: "center center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "black",
           }}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
